@@ -58,4 +58,4 @@ A high-fidelity, production-grade marketplace application inspired by **Tokopedi
 - [x] Multi-Role User Registry (Admin vs Shopper)
 
 ---
-Developed with ❤️ by Antigravity AI.
+Developed with ❤️ by Mazkev.
