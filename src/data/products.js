@@ -79,7 +79,20 @@ function mapProduct(item, index) {
 let cachedProducts = null;
 
 export async function fetchAllProducts() {
-  if (cachedProducts) return cachedProducts;
+  if (cachedProducts && cachedProducts.length > 0) return cachedProducts;
+  try {
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.data && json.data.length > 0) {
+        cachedProducts = json.data;
+        return cachedProducts;
+      }
+    }
+  } catch (e) {
+    console.warn('Gagal fetch /api/products dari MongoDB, fallback:', e);
+  }
+
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
