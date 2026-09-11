@@ -13,6 +13,7 @@ import AdminDashboard from './components/AdminDashboard';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
 import PaymentPage from './components/PaymentPage';
+import { api } from './services/api';
 
 
 export default function App() {
@@ -46,7 +47,14 @@ export default function App() {
   const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('reviews')) || []);
   const [appliedVoucher, setAppliedVoucher] = useState(null);
 
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || null); 
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('user'));
+      return (saved && typeof saved === 'object' && (saved.name || saved.email)) ? saved : null;
+    } catch {
+      return null;
+    }
+  }); 
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     const saved = JSON.parse(localStorage.getItem('registeredUsers'));
     return saved || [{ email: 'admin@tokopedia.com', password: 'admin123', name: 'Admin Tokopedia', role: 'admin', id: 'admin-001' }];
@@ -60,31 +68,75 @@ export default function App() {
   useEffect(() => { localStorage.setItem('vouchers', JSON.stringify(vouchers)); }, [vouchers]);
   useEffect(() => { localStorage.setItem('reviews', JSON.stringify(reviews)); }, [reviews]);
 
+  // 1. Sinkronisasi Produk dari Backend MongoDB (dengan fallback)
   useEffect(() => {
-    import('./data/products').then(m => {
-      m.fetchAllProducts().then(data => setProducts(data));
-    });
+    api.getProducts()
+      .then(data => {
+        if (data && data.length > 0) {
+          setProducts(data);
+        } else {
+          import('./data/products').then(m => m.fetchAllProducts().then(setProducts));
+        }
+      })
+      .catch(() => {
+        import('./data/products').then(m => m.fetchAllProducts().then(setProducts));
+      });
   }, []);
 
+  // 2. Sinkronisasi Pesanan dari Backend saat user login atau membuka menu orders/admin
+  useEffect(() => {
+    if (!user) return;
+    const fetchOrders = async () => {
+      try {
+        if (user.role === 'admin') {
+          const data = await api.getAllOrders();
+          if (data && Array.isArray(data)) setOrders(data);
+        } else {
+          const data = await api.getMyOrders();
+          if (data && Array.isArray(data)) setOrders(data);
+        }
+      } catch (err) {
+        console.warn('Gagal sinkronisasi pesanan dari API:', err);
+      }
+    };
+    fetchOrders();
+  }, [user, view]);
 
-  const handleApplyVoucher = (code) => {
-    const v = vouchers.find(x => x.code === code.toUpperCase());
-    if (v) {
+  const handleApplyVoucher = async (code) => {
+    try {
+      const v = await api.applyVoucher(code);
       setAppliedVoucher(v);
-      addNotification(`Voucher ${code.toUpperCase()} berhasil digunakan!`);
+      addNotification(`Voucher ${v.code} berhasil digunakan!`);
       return true;
-    } else {
-      addNotification("Voucher tidak valid.");
+    } catch (err) {
+      // Cek fallback lokal
+      const v = vouchers.find(x => x.code === code.toUpperCase());
+      if (v) {
+        setAppliedVoucher(v);
+        addNotification(`Voucher ${code.toUpperCase()} berhasil digunakan!`);
+        return true;
+      }
+      addNotification(err.message || "Voucher tidak valid.");
       return false;
     }
   };
 
-  const handleAddReview = (orderId, productId, reviewData) => {
+  const handleAddReview = async (orderId, productId, reviewData) => {
+    try {
+      await api.createReview({
+        orderId: String(orderId),
+        productId: String(productId),
+        rating: reviewData.rating,
+        comment: reviewData.comment
+      });
+    } catch (err) {
+      console.warn("Gagal simpan review ke API:", err);
+    }
     const newReview = {
       id: Date.now(),
       orderId,
       productId,
-      userName: user.name,
+      userName: user?.name || 'User',
       ...reviewData,
       date: new Date().toLocaleDateString('id-ID')
     };
@@ -93,48 +145,66 @@ export default function App() {
     addNotification("Terima kasih atas ulasanmu!");
   };
 
-
-  const handleUpdateProduct = (updatedProduct) => {
+  const handleUpdateProduct = async (updatedProduct) => {
+    try {
+      await api.updateProduct(updatedProduct.id, updatedProduct);
+    } catch (err) {
+      console.warn("Gagal update produk ke API:", err);
+    }
     setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
     addNotification(`Produk "${updatedProduct.name}" berhasil diupdate!`);
   };
 
-
-  const handleLogin = (credentials) => {
-    const foundUser = registeredUsers.find(u => u.email === credentials.email && u.password === credentials.password);
-    
-    if (foundUser) {
-      setUser({ id: foundUser.id, name: foundUser.name, role: foundUser.role });
-      setView(foundUser.role === 'admin' ? 'admin' : 'home');
-      addNotification(`Selamat datang kembali, ${foundUser.name}!`);
-    } else {
-      addNotification("Email atau password salah! Silakan daftar jika belum punya akun.");
+  const handleLogin = async (credentials) => {
+    try {
+      const resp = await api.login(credentials);
+      localStorage.setItem('token', resp.token);
+      setUser(resp.user);
+      setView(resp.user.role === 'admin' ? 'admin' : 'home');
+      addNotification(`Selamat datang kembali, ${resp.user.name}!`);
+    } catch (err) {
+      // Fallback akun lokal jika server backend belum siap
+      const foundUser = registeredUsers.find(u => u.email === credentials.email && u.password === credentials.password);
+      if (foundUser) {
+        setUser({ id: foundUser.id, name: foundUser.name, role: foundUser.role });
+        setView(foundUser.role === 'admin' ? 'admin' : 'home');
+        addNotification(`Selamat datang kembali, ${foundUser.name}!`);
+      } else {
+        addNotification(err.message || "Email atau password salah! Silakan daftar jika belum punya akun.");
+      }
     }
     window.scrollTo(0, 0);
   };
 
-
   const handleLogout = () => {
+    localStorage.removeItem('token');
     setUser(null);
     setView('home');
     addNotification("Berhasil Logout.");
   };
 
-  const handleRegister = (data) => {
-    const newUser = {
-      id: 'u-' + Date.now(),
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      role: 'user' // Strictly regular account for new registrations
-    };
-    
-    setRegisteredUsers(prev => [...prev, newUser]);
-    setUser({ id: newUser.id, name: newUser.name, role: newUser.role });
-    setView('home');
-    addNotification(`Pendaftaran berhasil. Selamat datang ${newUser.name}!`);
+  const handleRegister = async (data) => {
+    try {
+      const resp = await api.register(data);
+      localStorage.setItem('token', resp.token);
+      setUser(resp.user);
+      setView('home');
+      addNotification(`Pendaftaran berhasil. Selamat datang ${resp.user.name}!`);
+    } catch (err) {
+      // Fallback registrasi lokal
+      const newUser = {
+        id: 'u-' + Date.now(),
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        role: 'user'
+      };
+      setRegisteredUsers(prev => [...prev, newUser]);
+      setUser({ id: newUser.id, name: newUser.name, role: newUser.role });
+      setView('home');
+      addNotification(`Pendaftaran berhasil. Selamat datang ${newUser.name}!`);
+    }
   };
-
 
   const addToCart = (product) => {
     setCartItems(prev => {
@@ -148,6 +218,7 @@ export default function App() {
     });
     addNotification(`Berhasil menambah ${product.name} ke keranjang!`);
   };
+
   const updateCartQty = (id, delta) => {
     setCartItems(prev => prev.map(item => {
       if (item.id === id) {
@@ -164,11 +235,16 @@ export default function App() {
     if (item) addNotification(`${item.name} dihapus dari keranjang.`);
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await api.updateOrderStatus(orderId, newStatus);
+    } catch (err) {
+      console.warn("Gagal update status di backend:", err);
+    }
     setOrders(prev => prev.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
+      (order.id === orderId || order._id === orderId) ? { ...order, status: newStatus } : order
     ));
-    addNotification(`Status pesanan ${orderId} diupdate ke: ${newStatus}`);
+    addNotification(`Status pesanan diupdate ke: ${newStatus}`);
   };
 
   const handleCheckout = () => {
@@ -179,30 +255,47 @@ export default function App() {
     }
     if (cartItems.length === 0) return;
     
-    // Go to payment page instead of success
     setView('payment');
     window.scrollTo(0, 0);
   };
 
-  const handlePaymentConfirm = (method) => {
+  const handlePaymentConfirm = async (method) => {
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
     const discount = appliedVoucher ? appliedVoucher.discount : 0;
     
-    const newOrder = {
-      id: 'INV/' + Date.now().toString().slice(-8),
-      userId: user.id,
-      userName: user.name,
-      date: new Date().toLocaleString('id-ID'),
-      items: [...cartItems],
-      total: Math.max(0, subtotal - discount),
-      status: 'Menunggu Konfirmasi',
-      paymentMethod: method,
-      voucherUsed: appliedVoucher ? appliedVoucher.code : null
-    };
+    let createdOrder = null;
+    try {
+      const orderPayload = {
+        items: cartItems.map(item => ({
+          id: String(item.id),
+          name: item.name,
+          price: item.price,
+          qty: item.qty,
+          image: item.image,
+          shop: item.shop || 'Tokopedia Store'
+        })),
+        paymentMethod: method,
+        voucherCode: appliedVoucher ? appliedVoucher.code : ''
+      };
+      createdOrder = await api.createOrder(orderPayload);
+    } catch (err) {
+      console.warn("Gagal kirim order ke API, fallback simpan lokal:", err);
+      createdOrder = {
+        id: 'INV/' + Date.now().toString().slice(-8),
+        userId: user?.id || 'guest',
+        userName: user?.name || 'User',
+        date: new Date().toLocaleString('id-ID'),
+        items: [...cartItems],
+        total: Math.max(0, subtotal - discount),
+        status: 'Menunggu Konfirmasi',
+        paymentMethod: method,
+        voucherUsed: appliedVoucher ? appliedVoucher.code : null
+      };
+    }
 
-    setOrders(prev => [newOrder, ...prev]);
+    setOrders(prev => [createdOrder, ...prev]);
     setCartItems([]);
-    setAppliedVoucher(null); // Clear voucher after use
+    setAppliedVoucher(null);
     setView('success');
     addNotification(`Pembayaran via ${method.toUpperCase()} berhasil! Pesanan sedang diproses.`);
     window.scrollTo(0, 0);

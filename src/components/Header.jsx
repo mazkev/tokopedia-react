@@ -173,9 +173,11 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
 
             {user ? (
               <div className="header-user-profile">
-                <div className="user-avatar" title={user.name}>{user.name[0].toUpperCase()}</div>
+                <div className="user-avatar" title={user.name || user.email || 'User'}>
+                  {((user.name || user.email || 'U')[0]).toUpperCase()}
+                </div>
                 <div className="user-dropdown-wrapper">
-                  <div className="user-name-label">{user.name}</div>
+                  <div className="user-name-label">{user.name || user.email || 'User'}</div>
                   <div className="user-actions-dropdown">
                     {user.role === 'admin' && (
                       <button onClick={goAdmin}>Admin Dashboard</button>
