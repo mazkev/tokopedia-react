@@ -1,8 +1,3 @@
-const API_URL = 'https://fakestoreapi.com/products';
-
-// Convert USD to IDR (approximate)
-const USD_TO_IDR = 16000;
-
 export const categories = [
   { name: 'Elektronik', icon: '💻' },
   { name: 'Fashion Pria', icon: '👔' },
@@ -40,46 +35,94 @@ const locations = [
   'Bekasi', 'Depok', 'Bogor', 'Yogyakarta',
 ];
 
-const shopsByCategory = {
-  "electronics": { name: 'TechZone Official', badge: 'official' },
-  "jewelery": { name: 'GoldStar Jewelry', badge: 'official' },
-  "men's clothing": { name: 'FashionHub ID', badge: 'power-merchant' },
-  "women's clothing": { name: 'StyleKu Store', badge: 'power-merchant' },
-};
+export const DEFAULT_PRODUCTS = [
+  {
+    id: 'prod-001',
+    name: 'Apple iPhone 15 Pro Max 256GB Natural Titanium',
+    price: 21999000,
+    originalPrice: 24999000,
+    discount: 12,
+    image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80',
+    rating: 4.9,
+    sold: 450,
+    shop: 'iBox Official',
+    location: 'Jakarta Pusat',
+    badge: 'official',
+    condition: 'Baru',
+    category: 'Elektronik',
+    stock: 50,
+  },
+  {
+    id: 'prod-002',
+    name: 'Sony WH-1000XM5 Wireless Noise Canceling Headphones',
+    price: 4999000,
+    originalPrice: 5999000,
+    discount: 16,
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
+    rating: 4.8,
+    sold: 1200,
+    shop: 'Sony Audio Official',
+    location: 'Jakarta Selatan',
+    badge: 'official',
+    condition: 'Baru',
+    category: 'Elektronik',
+    stock: 80,
+  },
+  {
+    id: 'prod-003',
+    name: 'Kaos Polos Pria Heavyweight Cotton Combed 24s',
+    price: 65000,
+    originalPrice: 85000,
+    discount: 23,
+    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80',
+    rating: 4.7,
+    sold: 15400,
+    shop: 'BasicWear ID',
+    location: 'Bandung',
+    badge: 'power-merchant',
+    condition: 'Baru',
+    category: 'Fashion Pria',
+    stock: 500,
+  },
+  {
+    id: 'prod-004',
+    name: 'Jam Tangan Pria Automatic Skeleton Luxury Stainless',
+    price: 350000,
+    originalPrice: 700000,
+    discount: 50,
+    image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80',
+    rating: 4.6,
+    sold: 890,
+    shop: 'TimeMaster Store',
+    location: 'Jakarta Barat',
+    badge: 'power-merchant',
+    condition: 'Baru',
+    category: 'Perhiasan',
+    stock: 100,
+  },
+  {
+    id: 'prod-005',
+    name: 'Sepatu Sneaker Pria Casual Sporty Slip-on Breathable',
+    price: 189000,
+    originalPrice: 299000,
+    discount: 36,
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+    rating: 4.8,
+    sold: 3200,
+    shop: 'SneakerZone Official',
+    location: 'Surabaya',
+    badge: 'official',
+    condition: 'Baru',
+    category: 'Fashion Pria',
+    stock: 200,
+  },
+];
 
-function mapProduct(item, index) {
-  const priceIDR = Math.round(item.price * USD_TO_IDR);
-  const hasDiscount = Math.random() > 0.3;
-  const discountPercent = hasDiscount ? Math.floor(Math.random() * 40) + 10 : 0;
-  const originalPrice = hasDiscount
-    ? Math.round(priceIDR / (1 - discountPercent / 100))
-    : null;
-  const shop = shopsByCategory[item.category] || { name: 'TokoMart', badge: null };
-  const location = locations[index % locations.length];
-  const condition = Math.random() > 0.15 ? 'Baru' : 'Bekas';
-
-  return {
-    id: item.id,
-    name: item.title,
-    price: priceIDR,
-    originalPrice,
-    discount: discountPercent,
-    image: item.image,
-    rating: item.rating.rate,
-    sold: item.rating.count,
-    shop: shop.name,
-    location,
-    badge: shop.badge,
-    condition,
-    category: item.category,
-  };
-}
-
-// Cache fetched products
 let cachedProducts = null;
 
 export async function fetchAllProducts() {
   if (cachedProducts && cachedProducts.length > 0) return cachedProducts;
+
   try {
     const res = await fetch('/api/products');
     if (res.ok) {
@@ -90,33 +133,25 @@ export async function fetchAllProducts() {
       }
     }
   } catch (e) {
-    console.warn('Gagal fetch /api/products dari MongoDB, fallback:', e);
+    console.warn('Gagal fetch /api/products, menggunakan data Tokopedia lokal:', e);
   }
 
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    cachedProducts = data.map(mapProduct);
-    return cachedProducts;
-  } catch (err) {
-    console.error('Failed to fetch products:', err);
-    return [];
-  }
+  cachedProducts = DEFAULT_PRODUCTS;
+  return cachedProducts;
 }
 
 export async function fetchFlashSaleProducts() {
   const all = await fetchAllProducts();
-  // Pick 6 products and give them flash sale pricing
   return all.slice(0, 6).map((p) => {
-    const discount = Math.floor(Math.random() * 30) + 40; // 40-70%
-    const original = Math.round(p.price / (1 - discount / 100));
+    const discount = p.discount > 0 ? p.discount : 40;
+    const original = p.originalPrice || Math.round(p.price / (1 - discount / 100));
     return {
       ...p,
       discount,
       original,
       price: p.price,
-      sold: Math.floor(Math.random() * 80) + 20,
-      stock: 100,
+      sold: p.sold || 50,
+      stock: p.stock || 100,
     };
   });
 }
@@ -134,6 +169,5 @@ export function filterProducts(products, filters = {}) {
     return true;
   });
 }
-
 
 export { locations };
