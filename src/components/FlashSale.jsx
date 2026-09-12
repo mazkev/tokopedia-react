@@ -58,7 +58,15 @@ export default function FlashSale({ onProductClick }) {
               onClick={() => onProductClick && onProductClick(p)}
             >
               <div className="flash-product-img">
-                <img src={p.image} alt={p.name} loading="lazy" />
+                <img 
+                  src={p.image} 
+                  alt={p.name} 
+                  loading="lazy" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';
+                  }}
+                />
                 <span className="flash-discount-badge">{p.discount}%</span>
               </div>
               <div className="flash-product-info">

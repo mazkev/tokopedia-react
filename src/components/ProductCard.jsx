@@ -13,7 +13,15 @@ export default function ProductCard({ product, onClick }) {
   return (
     <div className="product-card animate-in" onClick={() => onClick && onClick(p)}>
       <div className="product-img">
-        <img src={p.image} alt={p.name} loading="lazy" />
+        <img 
+          src={p.image} 
+          alt={p.name} 
+          loading="lazy" 
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';
+          }}
+        />
         {p.badge && (
           <div className={`product-badge ${p.badge === 'official' ? 'official' : 'power-merchant'}`}>
             {p.badge === 'official' ? '✓ Official Store' : '⚡ Power Merchant'}

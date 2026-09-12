@@ -14,12 +14,19 @@ export default function ProductDetail({ product, onAddToCart }) {
         {/* Left: Images */}
         <div className="product-detail-gallery">
           <div className="main-image">
-            <img src={p.image} alt={p.name} />
+            <img 
+              src={p.image} 
+              alt={p.name} 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';
+              }} 
+            />
           </div>
           <div className="thumbnail-list">
-            <div className="thumb active"><img src={p.image} /></div>
-            <div className="thumb"><img src={p.image} /></div>
-            <div className="thumb"><img src={p.image} /></div>
+            <div className="thumb active"><img src={p.image} onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'; }} /></div>
+            <div className="thumb"><img src={p.image} onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'; }} /></div>
+            <div className="thumb"><img src={p.image} onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'; }} /></div>
           </div>
         </div>
 
