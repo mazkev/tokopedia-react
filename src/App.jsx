@@ -467,6 +467,8 @@ export default function App() {
 
           <ProductDetail 
             product={selectedProduct} 
+            allProducts={products}
+            onProductClick={handleProductClick}
             localReviews={reviews}
             isWishlisted={wishlist.some(item => item.id === selectedProduct.id)}
             onToggleWishlist={toggleWishlist}

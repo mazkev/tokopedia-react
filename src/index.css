@@ -2291,6 +2291,67 @@ input:checked + .slider:before { transform: translateX(20px); }
 .applied-voucher-info .text { flex: 1; font-size: 13px; }
 .applied-voucher-info .remove-v { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
 
+/* ========== RELATED PRODUCTS (KAMU MUNGKIN JUGA SUKA) ========== */
+.related-products-section {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid #E5E7EB;
+}
+.related-products-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.related-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.related-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.related-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-primary);
+  background: #E8F5E9;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #C8E6C9;
+}
+.related-actions {
+  display: flex;
+  align-items: center;
+}
+.related-count-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.related-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .related-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+
 
 
 
