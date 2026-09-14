@@ -209,17 +209,18 @@ export default function App() {
     }
   };
 
-  const addToCart = (product) => {
+  const addToCart = (product, qty = 1) => {
+    const addQty = typeof qty === 'number' && qty > 0 ? qty : 1;
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+          item.id === product.id ? { ...item, qty: item.qty + addQty } : item
         );
       }
-      return [...prev, { ...product, qty: 1 }];
+      return [...prev, { ...product, qty: addQty }];
     });
-    addNotification(`Berhasil menambah ${product.name} ke keranjang!`);
+    addNotification(`Berhasil menambah ${addQty > 1 ? addQty + 'x ' : ''}${product.name} ke keranjang!`);
   };
 
   const updateCartQty = (id, delta) => {
@@ -385,7 +386,11 @@ export default function App() {
 
           <ProductDetail 
             product={selectedProduct} 
-            onAddToCart={() => addToCart(selectedProduct)}
+            onAddToCart={(prod, qty) => addToCart(prod || selectedProduct, qty)}
+            onBuyNow={(prod, qty) => {
+              addToCart(prod || selectedProduct, qty);
+              setView('cart');
+            }}
           />
         )}
 
