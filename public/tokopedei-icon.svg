@@ -8,19 +8,23 @@
       <stop offset="0%" stop-color="#FFFFFF" />
       <stop offset="100%" stop-color="#E8F5E9" />
     </linearGradient>
+    <filter id="soft-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
   </defs>
 
   <!-- Handle Tas Belanja -->
   <path d="M34 32 C34 16, 66 16, 66 32" fill="none" stroke="#007525" stroke-width="8" stroke-linecap="round" />
   <path d="M34 32 C34 18, 66 18, 66 32" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" />
 
-  <!-- Badan Tas Belanja -->
-  <rect x="12" y="28" width="76" height="64" rx="18" fill="url(#tokopedei-grad)" />
+  <!-- Badan Tas Belanja (Karakter Tokopedei) -->
+  <rect x="12" y="28" width="76" height="64" rx="18" fill="url(#tokopedei-grad)" filter="url(#soft-shadow)" />
 
   <!-- Highlight Lengkungan Tas Atas -->
   <path d="M16 42 Q50 34 84 42" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3" stroke-linecap="round" />
 
   <!-- Mata Karakter Owl / Toped (Kiri & Kanan) -->
+  <!-- Lingkaran Luar Putih -->
   <circle cx="36" cy="56" r="14" fill="url(#eye-shimmer)" />
   <circle cx="64" cy="56" r="14" fill="url(#eye-shimmer)" />
 
@@ -28,7 +32,7 @@
   <circle cx="36" cy="56" r="8.5" fill="#006622" />
   <circle cx="64" cy="56" r="8.5" fill="#006622" />
 
-  <!-- Kilauan Cahaya Mata -->
+  <!-- Kilauan Cahaya Mata (Pupil Highlight) -->
   <circle cx="33.5" cy="53.5" r="3.5" fill="#FFFFFF" />
   <circle cx="61.5" cy="53.5" r="3.5" fill="#FFFFFF" />
   <circle cx="38.5" cy="58.5" r="1.5" fill="#FFFFFF" opacity="0.8" />
@@ -37,7 +41,7 @@
   <!-- Paruh Mini Oranye Ceria -->
   <polygon points="50,62 46,68 54,68" fill="#FF9800" rx="1" />
 
-  <!-- Pipi Merona / Blush -->
+  <!-- Pipi Merona / Blush Kiri & Kanan -->
   <ellipse cx="23" cy="67" rx="4" ry="2.5" fill="#FF5252" opacity="0.6" />
   <ellipse cx="77" cy="67" rx="4" ry="2.5" fill="#FF5252" opacity="0.6" />
 </svg>

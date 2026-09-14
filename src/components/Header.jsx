@@ -51,7 +51,8 @@ export default function Header({ cartCount, cartItems = [], wishlist = [], goWis
       <header className={`header ${scrolled ? 'scrolled' : ''}`}>
         <div className="header-inner">
           <div className="logo" onClick={goHome} style={{ cursor: 'pointer' }}>
-            Toko<span>pedei</span>
+            <img src="/tokopedei-icon.svg" alt="Tokopedei" className="logo-icon" />
+            <div>Toko<span>pedei</span></div>
           </div>
 
           {/* Category Mega Menu */}

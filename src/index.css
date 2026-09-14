@@ -75,12 +75,25 @@ ul { list-style: none; }
   gap: 16px;
 }
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 24px;
   font-weight: 800;
   color: var(--green-primary);
   letter-spacing: -0.5px;
   white-space: nowrap;
   flex-shrink: 0;
+  user-select: none;
+}
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+.logo:hover .logo-icon {
+  transform: scale(1.08) rotate(-4deg);
 }
 .logo span { color: var(--text-primary); }
 

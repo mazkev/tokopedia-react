@@ -18,7 +18,10 @@ export default function AuthPage({ mode, onLogin, onRegister, onSwitch }) {
     <div className="auth-page-container animate-in">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="logo">Toko<span>pedei</span></div>
+          <div className="logo" style={{ justifyContent: 'center', marginBottom: '14px' }}>
+            <img src="/tokopedei-icon.svg" alt="Tokopedei" className="logo-icon" style={{ width: '40px', height: '40px' }} />
+            <div>Toko<span>pedei</span></div>
+          </div>
           <h2>{mode === 'login' ? 'Masuk' : 'Daftar Sekarang'}</h2>
           <p>{mode === 'login' ? 'Belum punya akun Tokopedei?' : 'Sudah punya akun Tokopedei?'} <span className="switch-link" onClick={onSwitch}>{mode === 'login' ? 'Daftar' : 'Masuk'}</span></p>
         </div>
