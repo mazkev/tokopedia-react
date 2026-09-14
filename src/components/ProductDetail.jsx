@@ -280,9 +280,11 @@ export default function ProductDetail({ product, onAddToCart, onBuyNow, isWishli
                 {isWishlisted ? '❤️ Tersimpan' : '🤍 Wishlist'}
               </button>
               <button onClick={() => {
+                const productId = p.id || p._id;
+                const url = window.location.origin + window.location.pathname + '?product=' + productId;
                 if (navigator.clipboard) {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("Link produk berhasil disalin ke clipboard!");
+                  navigator.clipboard.writeText(url);
+                  alert("Link produk berhasil disalin ke clipboard:\n" + url);
                 }
               }}>🔗 Share</button>
             </div>

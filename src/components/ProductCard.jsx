@@ -10,8 +10,21 @@ function formatSold(n) {
 export default function ProductCard({ product, onClick }) {
   const p = product;
 
+  const productId = p.id || p._id;
+  const productUrl = `?product=${productId}`;
+
   return (
-    <div className="product-card animate-in" onClick={() => onClick && onClick(p)}>
+    <a 
+      href={productUrl}
+      className="product-card animate-in" 
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+      onClick={(e) => {
+        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+          e.preventDefault();
+          onClick && onClick(p);
+        }
+      }}
+    >
       <div className="product-img">
         <img 
           src={p.image} 
@@ -46,7 +59,7 @@ export default function ProductCard({ product, onClick }) {
           </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 

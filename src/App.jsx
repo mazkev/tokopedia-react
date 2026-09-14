@@ -334,36 +334,92 @@ export default function App() {
   };
 
 
+  // Sinkronisasi URL query params (?product=... atau ?page=...) dengan tampilan aplikasi
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('product');
+      const page = params.get('page');
+
+      if (productId) {
+        if (products.length > 0) {
+          const found = products.find(p => String(p.id || p._id) === String(productId));
+          if (found) {
+            setSelectedProduct(found);
+            setView('detail');
+            return;
+          }
+        }
+      } else if (page) {
+        if (['cart', 'wishlist', 'orders', 'admin', 'login', 'register'].includes(page)) {
+          setView(page);
+          return;
+        }
+      } else {
+        setView('home');
+        setSelectedProduct(null);
+      }
+    };
+
+    handleUrlChange();
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
+  }, [products]);
+
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setView('detail');
+    const productId = product.id || product._id;
+    if (new URLSearchParams(window.location.search).get('product') !== String(productId)) {
+      window.history.pushState({}, '', `?product=${productId}`);
+    }
     window.scrollTo(0, 0);
   };
 
   const goHome = () => {
     setView('home');
     setSelectedProduct(null);
+    if (window.location.search) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
     window.scrollTo(0, 0);
   };
 
   const goCart = () => {
     setView('cart');
+    window.history.pushState({}, '', '?page=cart');
     window.scrollTo(0, 0);
   };
 
   const goOrders = () => {
     setView('orders');
+    window.history.pushState({}, '', '?page=orders');
     window.scrollTo(0, 0);
   };
 
   const goWishlist = () => {
     setView('wishlist');
+    window.history.pushState({}, '', '?page=wishlist');
     window.scrollTo(0, 0);
   };
 
-  const goLogin = () => setView('login');
-  const goRegister = () => setView('register');
-  const goAdmin = () => setView('admin');
+  const goLogin = () => {
+    setView('login');
+    window.history.pushState({}, '', '?page=login');
+    window.scrollTo(0, 0);
+  };
+
+  const goRegister = () => {
+    setView('register');
+    window.history.pushState({}, '', '?page=register');
+    window.scrollTo(0, 0);
+  };
+
+  const goAdmin = () => {
+    setView('admin');
+    window.history.pushState({}, '', '?page=admin');
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div id="app-root">
