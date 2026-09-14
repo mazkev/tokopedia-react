@@ -272,7 +272,7 @@ export default function App() {
           price: item.price,
           qty: item.qty,
           image: item.image,
-          shop: item.shop || 'Tokopedia Store'
+          shop: item.shop || 'Tokopedei Store'
         })),
         paymentMethod: method,
         voucherCode: appliedVoucher ? appliedVoucher.code : ''
@@ -420,7 +420,7 @@ export default function App() {
             <div className="success-content">
               <div className="success-icon">🎉</div>
               <h2>Pembayaran Berhasil!</h2>
-              <p>Terima kasih telah berbelanja di Tokopedia. Pesananmu akan segera diproses oleh penjual.</p>
+              <p>Terima kasih telah berbelanja di Tokopedei. Pesananmu akan segera diproses oleh penjual.</p>
               <div className="success-actions">
                 <button className="btn-track" onClick={goOrders}>Cek Status Pesanan</button>
                 <button className="btn-home-success" onClick={goHome}>Belanja Lagi</button>

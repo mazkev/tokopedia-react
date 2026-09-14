@@ -30,13 +30,13 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
       <div className="top-bar">
         <div className="top-bar-inner">
           <div className="top-bar-links">
-            <a href="#" onClick={(e) => { e.preventDefault(); goHome(); }}>Tentang Tokopedia</a>
-            <a href="#">Mitra Tokopedia</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); goHome(); }}>Tentang Tokopedei</a>
+            <a href="#">Mitra Tokopedei</a>
             <a href="#">Mulai Berjualan</a>
             <a href="#">Promo</a>
           </div>
           <div className="top-bar-links">
-            <a href="#">Tokopedia Care</a>
+            <a href="#">Tokopedei Care</a>
             <a href="#">Download App</a>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
       <header className={`header ${scrolled ? 'scrolled' : ''}`}>
         <div className="header-inner">
           <div className="logo" onClick={goHome} style={{ cursor: 'pointer' }}>
-            Toko<span>pedia</span>
+            Toko<span>pedei</span>
           </div>
 
           {/* Category Mega Menu */}
@@ -70,7 +70,7 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
               id="search-input"
               className="search-bar"
               type="text"
-              placeholder="Cari di Tokopedia"
+              placeholder="Cari di Tokopedei"
               value={search}
               onChange={handleSearchChange}
               onKeyDown={handleSearchKeyDown}

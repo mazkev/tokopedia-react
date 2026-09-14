@@ -13,7 +13,7 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
 
   // Shop & Config states
   const [shopInfo, setShopInfo] = useState({
-    name: 'Tokopedia Official Store',
+    name: 'Tokopedei Official Store',
     desc: 'Toko resmi yang menyediakan berbagai kebutuhan barang original dengan harga terbaik.',
     location: 'Jakarta Selatan',
     logo: 'https://images.tokopedia.net/img/cache/215-square/Gv9S2W/2022/10/5/4e488f2f-1e96-41f2-9f37-1c210d54a638.png'
@@ -72,7 +72,7 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
         <div className="admin-profile">
           <div className="admin-avatar">A</div>
           <div className="admin-info">
-            <p className="admin-name">Admin Tokopedia</p>
+            <p className="admin-name">Admin Tokopedei</p>
             <p className="admin-role">Back Office Official</p>
           </div>
         </div>
