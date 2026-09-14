@@ -61,7 +61,7 @@ function ReviewModal({ order, onSave, onCancel }) {
   );
 }
 
-export default function OrdersPage({ orders, onGoHome, onAddReview }) {
+export default function OrdersPage({ orders, onGoHome, onAddReview, onCancelOrder, onReorder }) {
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [reviewingOrder, setReviewingOrder] = useState(null);
 
@@ -143,12 +143,45 @@ export default function OrdersPage({ orders, onGoHome, onAddReview }) {
                         </div>
                       ))}
                     </div>
+
+                    {order.shippingAddress && (
+                      <div className="order-shipping-summary animate-in" style={{ marginTop: '14px', background: '#F9FAFB', padding: '12px 14px', borderRadius: '8px' }}>
+                        <h4 style={{ margin: '0 0 6px 0', fontSize: '13px', color: '#111827' }}>📍 Tujuan Pengiriman:</h4>
+                        <p style={{ margin: '0 0 2px 0', fontSize: '12px', color: '#4B5563' }}>
+                          <b>{order.shippingAddress.recipient}</b> ({order.shippingAddress.phone})
+                        </p>
+                        <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6B7280' }}>
+                          {order.shippingAddress.street}, {order.shippingAddress.city} {order.shippingAddress.postalCode}
+                        </p>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--green-primary)', fontWeight: 600 }}>
+                          Kurir: {order.courier || 'Bebas Ongkir'} {order.shippingCost > 0 ? `(${formatPrice(order.shippingCost)})` : '(Gratis)'}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
               <div className="order-card-footer">
                 <div className="footer-actions">
+                  {order.status === 'Menunggu Konfirmasi' && (
+                    <button 
+                      className="btn-cancel-order"
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        border: '1px solid #EF4444',
+                        background: '#FEF2F2',
+                        color: '#DC2626',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => onCancelOrder && onCancelOrder(order.id)}
+                    >
+                      Batalkan Pesanan
+                    </button>
+                  )}
                   {order.status === 'Selesai' && !order.reviewed && (
                     <button className="btn-give-review" onClick={() => setReviewingOrder(order)}>Beri Ulasan</button>
                   )}
@@ -158,7 +191,12 @@ export default function OrdersPage({ orders, onGoHome, onAddReview }) {
                   >
                     {isExpanded ? 'Tutup Detail' : 'Lihat Detail Transaksi'}
                   </button>
-                  <button className="btn-buy-again-v2">Beli Lagi</button>
+                  <button 
+                    className="btn-buy-again-v2"
+                    onClick={() => onReorder && onReorder(order)}
+                  >
+                    Beli Lagi
+                  </button>
                 </div>
               </div>
             </div>

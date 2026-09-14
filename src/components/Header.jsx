@@ -233,21 +233,50 @@ export default function Header({ cartCount, cartItems = [], wishlist = [], goWis
 
             {user ? (
               <div className="header-user-profile">
-                <div className="user-avatar" title={user.name || user.email || 'User'}>
-                  {((user.name || user.email || 'U')[0]).toUpperCase()}
-                </div>
-                <div className="user-dropdown-wrapper">
-                  <div className="user-name-label">{user.name || user.email || 'User'}</div>
-                  <div className="user-actions-dropdown">
-                    {user.role === 'admin' && (
-                      <button onClick={goAdmin}>Admin Dashboard</button>
-                    )}
-                    <button onClick={() => { goOrders(); }}>Pembelian</button>
-                    <button>Wishlist</button>
-                    <button>Pengaturan</button>
-                    <div className="dropdown-divider"></div>
-                    <button className="logout-btn" onClick={onLogout}>Keluar</button>
+                <div className="user-profile-trigger">
+                  <div className="user-avatar" title={user.name || user.email || 'User'}>
+                    {((user.name || user.email || 'U')[0]).toUpperCase()}
                   </div>
+                  <span className="user-name-label">{user.name || user.email || 'User'}</span>
+                  <span className="dropdown-arrow" style={{ fontSize: '10px', color: '#888' }}>▼</span>
+                </div>
+                <div className="user-actions-dropdown animate-in">
+                  <div className="user-dropdown-header">
+                    <div className="dropdown-avatar">
+                      {((user.name || user.email || 'U')[0]).toUpperCase()}
+                    </div>
+                    <div className="dropdown-user-info">
+                      <p className="user-fullname">{user.name || 'Pengguna Tokopedei'}</p>
+                      <p className="user-email-text">{user.email || ''}</p>
+                      <span className="user-badge-role">{user.role === 'admin' ? '🛡️ Administrator' : '⭐ Member Plus'}</span>
+                    </div>
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <div className="dropdown-menu-links">
+                    {user.role === 'admin' && (
+                      <button className="dropdown-link-item" onClick={goAdmin}>
+                        <span className="icon">⚙️</span>
+                        <span>Admin Dashboard</span>
+                      </button>
+                    )}
+                    <button className="dropdown-link-item" onClick={goOrders}>
+                      <span className="icon">🛍️</span>
+                      <span>Daftar Transaksi</span>
+                    </button>
+                    <button className="dropdown-link-item" onClick={goWishlist}>
+                      <span className="icon">❤️</span>
+                      <span>Wishlist Saya</span>
+                    </button>
+                    <button className="dropdown-link-item" onClick={goCart}>
+                      <span className="icon">🛒</span>
+                      <span>Keranjang Belanja</span>
+                    </button>
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <button className="logout-btn-action" onClick={onLogout}>
+                    <span className="icon">🚪</span>
+                    <span>Keluar dari Akun</span>
+                  </button>
                 </div>
               </div>
             ) : (

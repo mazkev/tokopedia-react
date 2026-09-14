@@ -42,6 +42,7 @@ export default function App() {
 
   // Initialize from LocalStorage
   const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem('cartItems')) || []);
+  const [checkoutItems, setCheckoutItems] = useState([]);
   const [orders, setOrders] = useState(() => JSON.parse(localStorage.getItem('orders')) || []);
   const [notifications, setNotifications] = useState([]);
   const [vouchers, setVouchers] = useState(() => JSON.parse(localStorage.getItem('vouchers')) || [
@@ -267,34 +268,51 @@ export default function App() {
     addNotification(`Status pesanan diupdate ke: ${newStatus}`);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (selectedItems) => {
     if (!user) {
       setView('login');
       addNotification("Silakan login terlebih dahulu untuk checkout.");
       return;
     }
-    if (cartItems.length === 0) return;
+    const toCheckout = (selectedItems && selectedItems.length > 0) ? selectedItems : cartItems;
+    if (toCheckout.length === 0) {
+      addNotification("Pilih minimal satu barang di keranjang.");
+      return;
+    }
     
+    setCheckoutItems(toCheckout);
     setView('payment');
     window.scrollTo(0, 0);
   };
 
-  const handlePaymentConfirm = async (method) => {
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-    const discount = appliedVoucher ? appliedVoucher.discount : 0;
+  const handlePaymentConfirm = async (paymentDetails) => {
+    const isObj = paymentDetails && typeof paymentDetails === 'object';
+    const method = isObj ? paymentDetails.paymentMethod : paymentDetails;
+    const shippingAddress = isObj ? paymentDetails.shippingAddress : null;
+    const courier = isObj ? paymentDetails.courier : null;
+    const shippingCost = isObj ? (paymentDetails.shippingCost || 0) : 0;
+    
+    const itemsToProcess = checkoutItems.length > 0 ? checkoutItems : cartItems;
+    const subtotal = itemsToProcess.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const discount = appliedVoucher ? (appliedVoucher.discount || 0) : 0;
+    const grandTotal = Math.max(0, subtotal + shippingCost - discount);
     
     let createdOrder = null;
     try {
       const orderPayload = {
-        items: cartItems.map(item => ({
+        items: itemsToProcess.map(item => ({
           id: String(item.id),
           name: item.name,
           price: item.price,
           qty: item.qty,
           image: item.image,
+          selectedVariant: item.selectedVariant || null,
           shop: item.shop || 'Tokopedei Store'
         })),
         paymentMethod: method,
+        shippingAddress: shippingAddress,
+        courier: courier ? courier.name : 'Bebas Ongkir',
+        shippingCost: shippingCost,
         voucherCode: appliedVoucher ? appliedVoucher.code : ''
       };
       createdOrder = await api.createOrder(orderPayload);
@@ -305,8 +323,11 @@ export default function App() {
         userId: user?.id || 'guest',
         userName: user?.name || 'User',
         date: new Date().toLocaleString('id-ID'),
-        items: [...cartItems],
-        total: Math.max(0, subtotal - discount),
+        items: [...itemsToProcess],
+        shippingAddress: shippingAddress,
+        courier: courier ? courier.name : 'Bebas Ongkir',
+        shippingCost: shippingCost,
+        total: grandTotal,
         status: 'Menunggu Konfirmasi',
         paymentMethod: method,
         voucherUsed: appliedVoucher ? appliedVoucher.code : null
@@ -314,10 +335,34 @@ export default function App() {
     }
 
     setOrders(prev => [createdOrder, ...prev]);
-    setCartItems([]);
+    // Hapus hanya barang yang di-checkout dari keranjang
+    const processedIds = itemsToProcess.map(i => i.id);
+    setCartItems(prev => prev.filter(i => !processedIds.includes(i.id)));
+    setCheckoutItems([]);
     setAppliedVoucher(null);
     setView('success');
-    addNotification(`Pembayaran via ${method.toUpperCase()} berhasil! Pesanan sedang diproses.`);
+    addNotification(`Pembayaran via ${String(method).toUpperCase()} berhasil! Pesanan sedang diproses.`);
+    window.scrollTo(0, 0);
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm("Apakah Anda yakin ingin membatalkan pesanan ini?")) return;
+    try {
+      await api.updateOrderStatus(orderId, 'Dibatalkan');
+    } catch {
+      // ignore
+    }
+    setOrders(prev => prev.map(o => (o.id === orderId || o._id === orderId) ? { ...o, status: 'Dibatalkan' } : o));
+    addNotification(`Pesanan ${orderId} berhasil dibatalkan.`);
+  };
+
+  const handleReorder = (order) => {
+    if (!order || !order.items || order.items.length === 0) return;
+    order.items.forEach(item => {
+      addToCart(item, item.qty || 1);
+    });
+    setView('cart');
+    addNotification(`Barang dari pesanan berhasil dimasukkan kembali ke keranjang.`);
     window.scrollTo(0, 0);
   };
 
@@ -507,13 +552,17 @@ export default function App() {
             orders={orders} 
             onGoHome={goHome} 
             onAddReview={handleAddReview}
+            onCancelOrder={handleCancelOrder}
+            onReorder={handleReorder}
           />
         )}
 
 
         {view === 'payment' && (
           <PaymentPage 
-            total={Math.max(0, cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0) - (appliedVoucher ? appliedVoucher.discount : 0))}
+            items={checkoutItems.length > 0 ? checkoutItems : cartItems}
+            user={user}
+            appliedVoucher={appliedVoucher}
             onConfirm={handlePaymentConfirm}
             onCancel={goCart}
           />

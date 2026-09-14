@@ -24,6 +24,53 @@ export default function ProductDetail({
   const [helpfulCounts, setHelpfulCounts] = useState({});
   const [reviewsList, setReviewsList] = useState([]);
 
+  // Logika Pemilihan Varian Produk
+  const nameLower = (p.name || '').toLowerCase();
+  const isPhone = nameLower.includes('phone') || nameLower.includes('iphone') || nameLower.includes('samsung');
+  const isFashion = nameLower.includes('kaos') || nameLower.includes('baju') || nameLower.includes('sepatu') || nameLower.includes('sneaker');
+
+  const colorVariants = isPhone 
+    ? ['Natural Titanium', 'Space Black', 'Silver Blue']
+    : isFashion 
+      ? ['Hitam Onyx', 'Putih Bersih', 'Navy Blue']
+      : ['Hitam Original', 'Silver Abu', 'Emas / Gold'];
+
+  const optionVariants = isPhone
+    ? [
+        { label: '128 GB', priceDelta: 0 },
+        { label: '256 GB', priceDelta: 1500000 },
+        { label: '512 GB', priceDelta: 3000000 }
+      ]
+    : isFashion
+      ? [
+          { label: 'Ukuran M', priceDelta: 0 },
+          { label: 'Ukuran L', priceDelta: 0 },
+          { label: 'Ukuran XL', priceDelta: 10000 }
+        ]
+      : [
+          { label: 'Standar Resmi', priceDelta: 0 },
+          { label: 'Paket Bundle + Gift', priceDelta: 75000 }
+        ];
+
+  const [selectedColor, setSelectedColor] = useState(colorVariants[0]);
+  const [selectedOption, setSelectedOption] = useState(optionVariants[0]);
+
+  useEffect(() => {
+    setSelectedColor(colorVariants[0]);
+    setSelectedOption(optionVariants[0]);
+  }, [p.id, p._id]);
+
+  const activePrice = (p.price || 0) + (selectedOption?.priceDelta || 0);
+  const activeOriginalPrice = p.originalPrice ? (p.originalPrice + (selectedOption?.priceDelta || 0)) : 0;
+  const currentVariantLabel = `${selectedColor} • ${selectedOption?.label || ''}`;
+
+  const productWithVariant = {
+    ...p,
+    price: activePrice,
+    originalPrice: activeOriginalPrice,
+    selectedVariant: currentVariantLabel
+  };
+
   // Pastikan saat produk berganti, gambar & tab kembali ke state awal
   useEffect(() => {
     setSelectedImage(p.image);
@@ -213,13 +260,53 @@ export default function ProductDetail({
             <span className="stat-item">★ <span className="stat-val">{p.rating || 4.8}</span></span>
           </div>
           <div className="product-price-section">
-            <div className="main-price">{formatPrice(p.price)}</div>
+            <div className="main-price">{formatPrice(activePrice)}</div>
             {p.discount > 0 && (
               <div className="discount-info">
                 <span className="percent">{p.discount}%</span>
-                <span className="original">{formatPrice(p.originalPrice)}</span>
+                <span className="original">{formatPrice(activeOriginalPrice)}</span>
               </div>
             )}
+          </div>
+
+          {/* Pemilih Varian Produk */}
+          <div className="product-variants-section animate-in">
+            <div className="variant-group">
+              <label className="variant-label">
+                Pilih Warna: <span className="selected-val">{selectedColor}</span>
+              </label>
+              <div className="variant-chips-row">
+                {colorVariants.map(col => (
+                  <button 
+                    key={col} 
+                    type="button"
+                    className={`variant-chip ${selectedColor === col ? 'active' : ''}`}
+                    onClick={() => setSelectedColor(col)}
+                  >
+                    {col}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="variant-group" style={{ marginTop: '12px' }}>
+              <label className="variant-label">
+                Pilih Spesifikasi: <span className="selected-val">{selectedOption.label}</span>
+              </label>
+              <div className="variant-chips-row">
+                {optionVariants.map(opt => (
+                  <button 
+                    key={opt.label} 
+                    type="button"
+                    className={`variant-chip ${selectedOption.label === opt.label ? 'active' : ''}`}
+                    onClick={() => setSelectedOption(opt)}
+                  >
+                    {opt.label}
+                    {opt.priceDelta > 0 && <span className="delta"> (+{formatPrice(opt.priceDelta)})</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           
           <div className="detail-divider"></div>
@@ -568,11 +655,11 @@ export default function ProductDetail({
             </div>
             <div className="subtotal">
               <div className="label">Subtotal</div>
-              <div className="amount">{formatPrice(p.price * quantity)}</div>
+              <div className="amount">{formatPrice(activePrice * quantity)}</div>
             </div>
             <div className="main-btns">
-              <button className="btn-add-cart" onClick={() => onAddToCart && onAddToCart(p, quantity)}>+ Keranjang</button>
-              <button className="btn-buy" onClick={() => onBuyNow && onBuyNow(p, quantity)}>Beli Langsung</button>
+              <button className="btn-add-cart" onClick={() => onAddToCart && onAddToCart(productWithVariant, quantity)}>+ Keranjang</button>
+              <button className="btn-buy" onClick={() => onBuyNow && onBuyNow(productWithVariant, quantity)}>Beli Langsung</button>
             </div>
             <div className="action-footer">
               <button onClick={() => alert("Fitur chat toko sedang dalam pengembangan.")}>💬 Chat</button>
