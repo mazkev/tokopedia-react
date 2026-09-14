@@ -131,6 +131,17 @@ export const api = {
   },
 
   // === REVIEWS ===
+  async getProductReviews(productId) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/reviews/product/${productId}`);
+      const data = await res.json();
+      if (!res.ok) return [];
+      return data.data || [];
+    } catch {
+      return [];
+    }
+  },
+
   async createReview(reviewData) {
     const res = await fetch(`${API_BASE_URL}/reviews`, {
       method: 'POST',

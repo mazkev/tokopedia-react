@@ -467,6 +467,7 @@ export default function App() {
 
           <ProductDetail 
             product={selectedProduct} 
+            localReviews={reviews}
             isWishlisted={wishlist.some(item => item.id === selectedProduct.id)}
             onToggleWishlist={toggleWishlist}
             onAddToCart={(prod, qty) => addToCart(prod || selectedProduct, qty)}

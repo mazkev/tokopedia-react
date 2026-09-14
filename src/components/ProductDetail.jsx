@@ -155,6 +155,14 @@ export default function ProductDetail({ product, onAddToCart, onBuyNow, isWishli
             >
               Info Penting
             </div>
+            <div 
+              className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+              role="tab"
+              aria-selected={activeTab === 'reviews'}
+            >
+              Ulasan ({reviewsList.length})
+            </div>
           </div>
           
           {/* Tab 1: Detail Produk */}
@@ -230,6 +238,206 @@ export default function ProductDetail({ product, onAddToCart, onBuyNow, isWishli
               <div style={{ background: '#F8F9FA', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #FA591D' }}>
                 <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>🛡️ Asuransi Tokopedei</strong>
                 Seluruh barang bernilai tinggi otomatis dilindungi proteksi pengiriman resmi Tokopedei.
+              </div>
+            </div>
+          )}
+
+          {/* Tab 4: Ulasan Pembeli */}
+          {activeTab === 'reviews' && (
+            <div className="product-reviews-section animate-in" style={{ marginTop: '16px' }}>
+              {/* Rating Summary Card */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '24px', 
+                background: '#F8F9FA', 
+                padding: '20px', 
+                borderRadius: '12px', 
+                marginBottom: '20px',
+                alignItems: 'center',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ textAlign: 'center', minWidth: '120px' }}>
+                  <div style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1 }}>
+                    {p.rating || 4.9}
+                  </div>
+                  <div style={{ color: '#FFC107', fontSize: '18px', margin: '4px 0' }}>
+                    ★★★★★
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    {p.sold || 100}+ ulasan
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', marginBottom: '4px' }}>
+                    <span style={{ width: '45px', color: 'var(--text-secondary)' }}>★ 5</span>
+                    <div style={{ flex: 1, height: '8px', background: '#E5E7EB', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: '88%', height: '100%', background: 'var(--green-primary)', borderRadius: '4px' }}></div>
+                    </div>
+                    <span style={{ width: '30px', textAlign: 'right', color: '#6B7280' }}>88%</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', marginBottom: '4px' }}>
+                    <span style={{ width: '45px', color: 'var(--text-secondary)' }}>★ 4</span>
+                    <div style={{ flex: 1, height: '8px', background: '#E5E7EB', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: '10%', height: '100%', background: 'var(--green-primary)', borderRadius: '4px' }}></div>
+                    </div>
+                    <span style={{ width: '30px', textAlign: 'right', color: '#6B7280' }}>10%</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', marginBottom: '4px' }}>
+                    <span style={{ width: '45px', color: 'var(--text-secondary)' }}>★ 3</span>
+                    <div style={{ flex: 1, height: '8px', background: '#E5E7EB', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: '2%', height: '100%', background: 'var(--green-primary)', borderRadius: '4px' }}></div>
+                    </div>
+                    <span style={{ width: '30px', textAlign: 'right', color: '#6B7280' }}>2%</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                    <span style={{ width: '45px', color: 'var(--text-secondary)' }}>★ 2</span>
+                    <div style={{ flex: 1, height: '8px', background: '#E5E7EB', borderRadius: '4px' }}></div>
+                    <span style={{ width: '30px', textAlign: 'right', color: '#6B7280' }}>0%</span>
+                  </div>
+                </div>
+
+                <div style={{ borderLeft: '1px solid #E5E7EB', paddingLeft: '20px', minWidth: '150px' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--green-primary)', marginBottom: '4px' }}>
+                    ✓ 99% Pembeli Puas
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                    Pelanggan memuji kualitas produk, keaslian barang, dan kecepatan pengiriman.
+                  </div>
+                </div>
+              </div>
+
+              {/* Review Filter Chips */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => setReviewFilter('all')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    border: '1px solid',
+                    borderColor: reviewFilter === 'all' ? 'var(--green-primary)' : '#E5E7EB',
+                    background: reviewFilter === 'all' ? '#E8F5E9' : 'white',
+                    color: reviewFilter === 'all' ? 'var(--green-primary)' : 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Semua ({reviewsList.length})
+                </button>
+                <button
+                  onClick={() => setReviewFilter('5')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    border: '1px solid',
+                    borderColor: reviewFilter === '5' ? 'var(--green-primary)' : '#E5E7EB',
+                    background: reviewFilter === '5' ? '#E8F5E9' : 'white',
+                    color: reviewFilter === '5' ? 'var(--green-primary)' : 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ★ 5 ({reviewsList.filter(r => Number(r.rating) === 5).length})
+                </button>
+                <button
+                  onClick={() => setReviewFilter('4')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    border: '1px solid',
+                    borderColor: reviewFilter === '4' ? 'var(--green-primary)' : '#E5E7EB',
+                    background: reviewFilter === '4' ? '#E8F5E9' : 'white',
+                    color: reviewFilter === '4' ? 'var(--green-primary)' : 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ★ 4 ({reviewsList.filter(r => Number(r.rating) === 4).length})
+                </button>
+              </div>
+
+              {/* Reviews List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {reviewsList
+                  .filter(r => reviewFilter === 'all' || String(r.rating) === reviewFilter)
+                  .map((rev, idx) => (
+                    <div 
+                      key={rev.id || idx} 
+                      style={{ 
+                        borderBottom: '1px solid #F0F0F0', 
+                        paddingBottom: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ 
+                            width: '34px', 
+                            height: '34px', 
+                            borderRadius: '50%', 
+                            background: 'var(--green-primary)', 
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 700,
+                            fontSize: '14px'
+                          }}>
+                            {(rev.userName || 'U')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                              {rev.userName || 'Pembeli Tokopedei'}
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--green-primary)', fontWeight: 600 }}>
+                              ✓ Pembeli Terverifikasi
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                          {rev.date || 'Baru saja'}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                        <div style={{ color: '#FFC107', fontSize: '14px' }}>
+                          {'★'.repeat(Number(rev.rating) || 5)}{'☆'.repeat(5 - (Number(rev.rating) || 5))}
+                        </div>
+                        <span style={{ fontSize: '11px', color: '#6B7280', background: '#F3F4F6', padding: '2px 6px', borderRadius: '4px' }}>
+                          {rev.variant || 'Varian Sesuai'}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5, marginTop: '4px' }}>
+                        {rev.comment || 'Produk sangat memuaskan, sesuai dengan pesanan!'}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                        <button 
+                          onClick={() => handleHelpfulClick(rev.id || idx)}
+                          style={{
+                            background: 'none',
+                            border: '1px solid #E5E7EB',
+                            padding: '4px 10px',
+                            borderRadius: '16px',
+                            fontSize: '11px',
+                            color: '#4B5563',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          👍 Membantu ({helpfulCounts[rev.id || idx] || (idx === 0 ? 12 : idx === 1 ? 8 : 3)})
+                        </button>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           )}
