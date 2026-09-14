@@ -17,6 +17,7 @@ const OrdersPage = lazy(() => import('./components/OrdersPage'));
 const AuthPage = lazy(() => import('./components/AuthPage'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const PaymentPage = lazy(() => import('./components/PaymentPage'));
+const WishlistPage = lazy(() => import('./components/WishlistPage'));
 
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
     { code: 'HEMAT20', discount: 20000, type: 'flat' }
   ]);
   const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('reviews')) || []);
+  const [wishlist, setWishlist] = useState(() => JSON.parse(localStorage.getItem('wishlist')) || []);
   const [appliedVoucher, setAppliedVoucher] = useState(null);
 
   const [user, setUser] = useState(() => {
@@ -70,6 +72,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('orders', JSON.stringify(orders)); }, [orders]);
   useEffect(() => { localStorage.setItem('vouchers', JSON.stringify(vouchers)); }, [vouchers]);
   useEffect(() => { localStorage.setItem('reviews', JSON.stringify(reviews)); }, [reviews]);
+  useEffect(() => { localStorage.setItem('wishlist', JSON.stringify(wishlist)); }, [wishlist]);
 
   // 1. Sinkronisasi Produk dari Backend MongoDB (dengan fallback)
   useEffect(() => {
@@ -239,6 +242,19 @@ export default function App() {
     if (item) addNotification(`${item.name} dihapus dari keranjang.`);
   };
 
+  const toggleWishlist = (product) => {
+    setWishlist(prev => {
+      const exists = prev.some(item => item.id === product.id);
+      if (exists) {
+        addNotification(`${product.name} dihapus dari Wishlist.`);
+        return prev.filter(item => item.id !== product.id);
+      } else {
+        addNotification(`❤️ ${product.name} berhasil ditambahkan ke Wishlist!`);
+        return [...prev, product];
+      }
+    });
+  };
+
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       await api.updateOrderStatus(orderId, newStatus);
@@ -340,6 +356,11 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  const goWishlist = () => {
+    setView('wishlist');
+    window.scrollTo(0, 0);
+  };
+
   const goLogin = () => setView('login');
   const goRegister = () => setView('register');
   const goAdmin = () => setView('admin');
@@ -349,6 +370,10 @@ export default function App() {
       <Header 
         cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} 
         cartItems={cartItems}
+        wishlist={wishlist}
+        goWishlist={goWishlist}
+        onToggleWishlist={toggleWishlist}
+        onProductClick={handleProductClick}
         user={user}
         goHome={goHome} 
         goCart={goCart}
@@ -386,11 +411,23 @@ export default function App() {
 
           <ProductDetail 
             product={selectedProduct} 
+            isWishlisted={wishlist.some(item => item.id === selectedProduct.id)}
+            onToggleWishlist={toggleWishlist}
             onAddToCart={(prod, qty) => addToCart(prod || selectedProduct, qty)}
             onBuyNow={(prod, qty) => {
               addToCart(prod || selectedProduct, qty);
               setView('cart');
             }}
+          />
+        )}
+
+        {view === 'wishlist' && (
+          <WishlistPage 
+            items={wishlist} 
+            onAddToCart={addToCart} 
+            onRemove={toggleWishlist} 
+            onGoHome={goHome} 
+            onProductClick={handleProductClick} 
           />
         )}
 

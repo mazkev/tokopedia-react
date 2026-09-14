@@ -4,7 +4,7 @@ function formatPrice(n) {
   return 'Rp' + (n || 0).toLocaleString('id-ID');
 }
 
-export default function ProductDetail({ product, onAddToCart, onBuyNow }) {
+export default function ProductDetail({ product, onAddToCart, onBuyNow, isWishlisted, onToggleWishlist }) {
   const p = product || {};
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(p.image);
@@ -273,7 +273,12 @@ export default function ProductDetail({ product, onAddToCart, onBuyNow }) {
             </div>
             <div className="action-footer">
               <button onClick={() => alert("Fitur chat toko sedang dalam pengembangan.")}>💬 Chat</button>
-              <button onClick={() => alert(`Berhasil menambahkan ${p.name} ke Wishlist!`)}>❤️ Wishlist</button>
+              <button 
+                onClick={() => onToggleWishlist && onToggleWishlist(p)}
+                style={isWishlisted ? { color: '#E02424', borderColor: '#E02424', background: '#FDF2F2', fontWeight: 'bold' } : {}}
+              >
+                {isWishlisted ? '❤️ Tersimpan' : '🤍 Wishlist'}
+              </button>
               <button onClick={() => {
                 if (navigator.clipboard) {
                   navigator.clipboard.writeText(window.location.href);

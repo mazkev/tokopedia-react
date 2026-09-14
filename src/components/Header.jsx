@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { categories } from '../data/products';
 
-export default function Header({ cartCount, cartItems = [], user, goHome, goCart, goOrders, goLogin, goRegister, goAdmin, onLogout, onSearch }) {
+export default function Header({ cartCount, cartItems = [], wishlist = [], goWishlist, onToggleWishlist, onProductClick, user, goHome, goCart, goOrders, goLogin, goRegister, goAdmin, onLogout, onSearch }) {
   const [scrolled, setScrolled] = useState(false);
   const [search, setSearch] = useState('');
   const [notifCount, setNotifCount] = useState(5);
@@ -122,6 +122,60 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
                 <div className="dropdown-footer">
                   <button className="btn-view-cart" onClick={goCart}>Lihat Keranjang</button>
                 </div>
+              </div>
+            </div>
+
+            {/* Wishlist Dropdown */}
+            <div className="header-action-wrapper">
+              <button className="header-action-btn" id="wishlist-btn" title="Wishlist" onClick={goWishlist}>
+                ❤️
+                {wishlist.length > 0 && <span className="badge">{wishlist.length}</span>}
+              </button>
+              <div className="action-dropdown wishlist-dropdown">
+                <div className="dropdown-header">
+                  <h3>Wishlist ({wishlist.length})</h3>
+                  <a href="#" onClick={(e) => { e.preventDefault(); goWishlist && goWishlist(); }}>Lihat Semua</a>
+                </div>
+                <div className="dropdown-body">
+                  {wishlist.length === 0 ? (
+                    <div style={{ padding: '30px 15px', textAlign: 'center', color: '#717171' }}>
+                      <p style={{ fontSize: '24px', marginBottom: '8px' }}>🤍</p>
+                      <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Wishlist masih kosong</p>
+                      <p style={{ fontSize: '12px', marginTop: '4px' }}>Simpan barang favoritmu di sini!</p>
+                    </div>
+                  ) : (
+                    wishlist.slice(0, 4).map(item => (
+                      <div 
+                        key={item.id} 
+                        className="dropdown-item" 
+                        onClick={() => {
+                          onProductClick && onProductClick(item);
+                        }}
+                      >
+                        <img src={item.image} alt={item.name} />
+                        <div className="item-info">
+                          <p className="item-name">{item.name}</p>
+                          <p className="item-price">Rp{item.price.toLocaleString('id-ID')}</p>
+                        </div>
+                        <button 
+                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '14px', padding: '4px' }}
+                          title="Hapus dari wishlist"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist && onToggleWishlist(item);
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+                {wishlist.length > 0 && (
+                  <div className="dropdown-footer">
+                    <button className="btn-view-cart" onClick={goWishlist}>Buka Halaman Wishlist</button>
+                  </div>
+                )}
               </div>
             </div>
 
