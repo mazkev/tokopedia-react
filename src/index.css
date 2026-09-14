@@ -2713,6 +2713,85 @@ input:checked + .slider:before { transform: translateX(20px); }
   color: #111827;
 }
 
+/* ========== FORBIDDEN (403 ACCESS DENIED) ========== */
+.forbidden-page-container {
+  min-height: 65vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.forbidden-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid #E5E7EB;
+  max-width: 480px;
+  width: 100%;
+  padding: 40px 32px;
+  text-align: center;
+}
+.forbidden-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+.forbidden-content h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #DC2626;
+  margin: 0 0 10px 0;
+}
+.forbidden-content p {
+  font-size: 14px;
+  color: #4B5563;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+.forbidden-user-status {
+  background: #F3F4F6;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 24px;
+  display: inline-block;
+}
+.forbidden-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-primary-forbidden {
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-primary-forbidden:hover {
+  opacity: 0.9;
+}
+.btn-secondary-forbidden {
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary-forbidden:hover {
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+
 
 
 

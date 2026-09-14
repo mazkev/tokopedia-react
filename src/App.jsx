@@ -396,7 +396,21 @@ export default function App() {
           }
         }
       } else if (page) {
-        if (['cart', 'wishlist', 'orders', 'admin', 'login', 'register'].includes(page)) {
+        if (page === 'admin') {
+          if (!user) {
+            setView('login');
+            addNotification("🔒 Akses ditolak: Silakan login sebagai Admin terlebih dahulu.");
+            return;
+          }
+          if (user.role !== 'admin') {
+            setView('forbidden');
+            addNotification("🚫 Akses ditolak: Halaman ini khusus untuk Administrator.");
+            return;
+          }
+          setView('admin');
+          return;
+        }
+        if (['cart', 'wishlist', 'orders', 'login', 'register', 'forbidden'].includes(page)) {
           setView(page);
           return;
         }
@@ -409,7 +423,7 @@ export default function App() {
     handleUrlChange();
     window.addEventListener('popstate', handleUrlChange);
     return () => window.removeEventListener('popstate', handleUrlChange);
-  }, [products]);
+  }, [products, user]);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -461,6 +475,20 @@ export default function App() {
   };
 
   const goAdmin = () => {
+    if (!user) {
+      setView('login');
+      addNotification("🔒 Akses ditolak: Silakan login sebagai Admin terlebih dahulu.");
+      window.history.pushState({}, '', '?page=login');
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (user.role !== 'admin') {
+      setView('forbidden');
+      addNotification("🚫 Akses ditolak: Halaman ini khusus untuk Administrator.");
+      window.history.pushState({}, '', '?page=forbidden');
+      window.scrollTo(0, 0);
+      return;
+    }
     setView('admin');
     window.history.pushState({}, '', '?page=admin');
     window.scrollTo(0, 0);
@@ -496,16 +524,58 @@ export default function App() {
           <AuthPage mode="register" onRegister={handleRegister} onSwitch={goLogin} />
         )}
 
+        {view === 'forbidden' && (
+          <div className="forbidden-page-container animate-in">
+            <div className="forbidden-content">
+              <div className="forbidden-icon">🔒</div>
+              <h2>Akses Dibatasi (403 Forbidden)</h2>
+              <p>
+                Halaman Back Office ini memiliki sistem proteksi keamanan dan hanya dapat diakses oleh akun <b>Administrator Tokopedei</b>.
+              </p>
+              <div className="forbidden-user-status">
+                Status Akun Saat Ini: <b>{user ? `${user.name} (${user.role || 'Member'})` : 'Belum Login'}</b>
+              </div>
+              <div className="forbidden-actions">
+                <button className="btn-primary-forbidden" onClick={goHome}>Kembali ke Beranda</button>
+                <button className="btn-secondary-forbidden" onClick={() => { handleLogout(); goLogin(); }}>
+                  {user ? 'Ganti Akun Admin' : 'Login Sebagai Admin'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {view === 'admin' && (
-          <AdminDashboard 
-            orders={orders} 
-            products={products}
-            onUpdateStatus={updateOrderStatus} 
-            onUpdateProduct={handleUpdateProduct}
-            onGoHome={goHome}
-            onLogout={handleLogout}
-            addNotification={addNotification}
-          />
+          user && user.role === 'admin' ? (
+            <AdminDashboard 
+              orders={orders} 
+              products={products}
+              onUpdateStatus={updateOrderStatus} 
+              onUpdateProduct={handleUpdateProduct}
+              onGoHome={goHome}
+              onLogout={handleLogout}
+              addNotification={addNotification}
+            />
+          ) : (
+            <div className="forbidden-page-container animate-in">
+              <div className="forbidden-content">
+                <div className="forbidden-icon">🔒</div>
+                <h2>Akses Dibatasi (403 Forbidden)</h2>
+                <p>
+                  Halaman Back Office ini memiliki sistem proteksi keamanan dan hanya dapat diakses oleh akun <b>Administrator Tokopedei</b>.
+                </p>
+                <div className="forbidden-user-status">
+                  Status Akun Saat Ini: <b>{user ? `${user.name} (${user.role || 'Member'})` : 'Belum Login'}</b>
+                </div>
+                <div className="forbidden-actions">
+                  <button className="btn-primary-forbidden" onClick={goHome}>Kembali ke Beranda</button>
+                  <button className="btn-secondary-forbidden" onClick={() => { handleLogout(); goLogin(); }}>
+                    {user ? 'Ganti Akun Admin' : 'Login Sebagai Admin'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
         )}
 
         {view === 'detail' && selectedProduct && (
