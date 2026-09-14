@@ -12,10 +12,15 @@ export default function Header({ cartCount, cartItems = [], user, goHome, goCart
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch(search);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const handleSearchChange = (e) => {
-    const val = e.target.value;
-    setSearch(val);
-    onSearch(val);
+    setSearch(e.target.value);
   };
 
   const handleSearchKeyDown = (e) => {

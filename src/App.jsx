@@ -1,19 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Carousel from './components/Carousel';
 import ServiceIcons from './components/ServiceIcons';
 import FlashSale from './components/FlashSale';
 import FilterBar from './components/FilterBar';
 import ProductGrid from './components/ProductGrid';
-import ProductDetail from './components/ProductDetail';
-import CartPage from './components/CartPage';
-import OrdersPage from './components/OrdersPage';
-import AuthPage from './components/AuthPage';
-import AdminDashboard from './components/AdminDashboard';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
-import PaymentPage from './components/PaymentPage';
 import { api } from './services/api';
+import { fetchAllProducts } from './data/products';
+
+// Code-split komponen sekunder untuk mempercepat initial load beranda
+const ProductDetail = lazy(() => import('./components/ProductDetail'));
+const CartPage = lazy(() => import('./components/CartPage'));
+const OrdersPage = lazy(() => import('./components/OrdersPage'));
+const AuthPage = lazy(() => import('./components/AuthPage'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const PaymentPage = lazy(() => import('./components/PaymentPage'));
 
 
 export default function App() {
@@ -75,11 +78,11 @@ export default function App() {
         if (data && data.length > 0) {
           setProducts(data);
         } else {
-          import('./data/products').then(m => m.fetchAllProducts().then(setProducts));
+          fetchAllProducts().then(setProducts);
         }
       })
       .catch(() => {
-        import('./data/products').then(m => m.fetchAllProducts().then(setProducts));
+        fetchAllProducts().then(setProducts);
       });
   }, []);
 
@@ -357,6 +360,7 @@ export default function App() {
       />
 
       <main>
+        <Suspense fallback={<div className="view-loading-spinner" style={{ textAlign: 'center', padding: '60px 20px', color: '#6c727c' }}>Memuat konten...</div>}>
         {view === 'login' && (
           <AuthPage mode="login" onLogin={handleLogin} onSwitch={goRegister} />
         )}
@@ -443,7 +447,7 @@ export default function App() {
             />
           </>
         )}
-
+        </Suspense>
       </main>
 
       <Notification items={notifications} />

@@ -17,6 +17,7 @@ export default function ProductCard({ product, onClick }) {
           src={p.image} 
           alt={p.name} 
           loading="lazy" 
+          decoding="async" 
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';
