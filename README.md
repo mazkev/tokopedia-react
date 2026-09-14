@@ -1,61 +1,143 @@
-# Tokopedia Clone Elite - React Marketplace
+# TOKOPEDEI — Modern Marketplace & E-Commerce Web App
 
-A high-fidelity, production-grade marketplace application inspired by **Tokopedia**. This project features a seamless synchronization between the **Front Office** (Shopper Experience) and the **Back Office** (Administrative Control).
+[![Vercel Deployment](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://tokopedia-react.vercel.app)
+[![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![Backend](https://img.shields.io/badge/Backend-Go%20(Gin)%20%2B%20MongoDB-00ADD8?style=for-the-badge&logo=go)](http://143.198.166.143:8080)
 
-![Tokopedia Banner](https://images.tokopedia.net/img/Gv9S2W/2022/10/5/4e488f2f-1e96-41f2-9f37-1c210d54a638.png)
+A high-fidelity, production-grade marketplace web application inspired by **Tokopedia**, rebranded as **TOKOPEDEI**. Built with **React 19** and **Vite**, featuring seamless synchronization between the **Front Office** (Shopper Experience), **Back Office** (Admin Control with RBAC Security), and a high-performance **Go (Gin) + MongoDB** backend.
 
-## 🌟 Key Features
-
-### 🛒 Front Office (Buyer Experience)
-*   **Modern Homepage**: Interactive product grid with dynamic filtering, category chips, and promotional carousels.
-*   **Elite Checkout Flow**: Multi-step process including **Cart Management**, **Voucher Application**, and a **Secure Payment Gateway**.
-*   **Voucher Engine**: Support for discount codes (e.g., `TOKOPEDIA10`) with real-time price deduction in the cart.
-*   **Real-time Order Tracking**: Visual animated timeline tracking packages through 4 stages: *Menunggu Konfirmasi*, *Diproses*, *Dikirim*, and *Selesai*.
-*   **Social Proof**: Interactive rating and review system (1-5 stars) available for all completed transactions.
-*   **Persistence**: Full `localStorage` integration—sessions, carts, history, and user registries survive page refreshes.
-
-### 🏢 Back Office (Admin Dashboard)
-*   **Order Management**: Full CRUD operations for orders, status updates, and transaction auditing.
-*   **Inventory Control**: Real-time product editing (Name, Price, Category) that reflects instantly across the marketplace.
-*   **Live Analytics**: Sales trend charts (last 7 days), top-selling products leaderboard, and revenue KPIs.
-*   **Global Config**: System toggles for Maintenance Mode, Free Shipping promo, and Notification settings.
-*   **Shop Profiling**: Dedicated module to manage store identity, branding (logo), and public descriptions.
-
-## 🛠️ Technology Stack
-*   **Frontend**: React.js (Hooks & Functional Components)
-*   **Styling**: Vanilla CSS (Custom Design System with Glassmorphism)
-*   **State Management**: React State + LocalStorage (Persistent Mock DB)
-*   **Icons/Images**: Tokopedia Official CDN Assets
-
-## 🚀 Getting Started
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/mazkev/tokopedia-react.git
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the Admin Dashboard**:
-   *   **Email**: `admin@tokopedia.com`
-   *   **Password**: `admin123`
-
-## ✅ Completed Milestones
-- [x] High-fidelity Marketplace UI
-- [x] Admin Back Office V2 (Orders & Inventory)
-- [x] Voucher & Discount Engine (Real-time Calculation)
-- [x] Animated Order Tracking Timeline
-- [x] Post-Purchase Product Reviews
-- [x] Persistent Storage (LocalStorage Sync)
-- [x] Multi-Role User Registry (Admin vs Shopper)
+🌐 **Live Demo Website**: [https://tokopedia-react.vercel.app](https://tokopedia-react.vercel.app)
 
 ---
-Developed with ❤️ by Mazkev.
+
+## 🌟 Fitur Utama (Key Features)
+
+### 🛒 1. Pengalaman Berbelanja (Shopper Front Office)
+* **Branding Eksklusif TOKOPEDEI**:
+  - Logo SVG kustom Tokopedei, favicon, dan tema warna hijau khas marketplace terpercaya.
+  - Navbar responsif dengan bilah pencarian cerdas (*live search*), tombol wishlist dengan counter badge, drawer preview keranjang, notifikasi, dan menu profil.
+* **Halaman Detail Produk Lengkap**:
+  - **Galeri Foto Multi-Sudut**: Thumbnail interaktif untuk melihat berbagai sudut foto produk secara instan.
+  - **Pilihan Varian Produk**: Pilihan warna (*Space Black, Natural Titanium, dll*) dan spesifikasi/ukuran (*128GB, 256GB, dll*) dengan penyesuaian harga real-time.
+  - **Tab Navigasi Dinamis**: Tab *Detail*, *Spesifikasi*, *Info Penting*, dan *Ulasan Pembeli*.
+  - **Tab Ulasan Interaktif**: Rata-rata bintang, persentase kepuasan pembeli, breakdown bintang 5 s.d 1, filter review (*Semua*, *★ 5*, *★ 4*), review pembeli terverifikasi, dan counter interaktif **👍 Membantu**.
+  - **Rekomendasi "Kamu Mungkin Juga Suka"**: Carousel/grid rekomendasi produk serupa dalam kategori yang sama.
+  - **Tombol Cepat**: *Beli Langsung*, *+ Keranjang*, *🤍 Wishlist*, dan *🔗 Share (Salin Link)*.
+* **Keranjang Belanja Fleksibel**:
+  - **Checkbox Seleksi Barang**: Dukungan *"Pilih Semua"* atau centang produk individual (*partial checkout*).
+  - Ringkasan belanja dan total tagihan menyesuaikan barang yang dicentang.
+  - Barang yang tidak dipilih tetap tersimpan aman di keranjang.
+* **Alur Pengiriman & Pembayaran Komprehensif**:
+  - **Alamat Pengiriman**: Kartu alamat penerima lengkap dengan modal *"Ubah Alamat"* instan.
+  - **Pilihan Jasa Kurir**: *Bebas Ongkir (Rp0)*, *Reguler - JNE/SiCepat (Rp10.000)*, *Instan - GoSend (Rp20.000)*, dan *Kargo (Rp35.000)* dengan kalkulasi ongkir otomatis.
+  - **Metode Pembayaran**: Dukungan GoPay, OVO, Virtual Account (BCA, Mandiri, BNI), dan Kartu Kredit.
+  - **Kupon Promo & Diskon**: Dukungan kode voucher (misal: `TOKOPEDIA10`, `HEMAT20`).
+* **Pelacakan & Aksi Pesanan (Order Management)**:
+  - Timeline pelacakan pesanan: *Menunggu Konfirmasi ➔ Diproses ➔ Dikirim ➔ Selesai*.
+  - Rincian alamat pengiriman dan jasa kurir di setiap invoice.
+  - **Batalkan Pesanan**: Khusus pesanan berstatus *Menunggu Konfirmasi*.
+  - **Beli Lagi**: Memasukkan kembali seluruh barang dari transaksi lama ke keranjang dalam 1 klik.
+
+---
+
+### 🛡️ 2. Back Office & Keamanan Admin (RBAC Protected)
+* **Role-Based Access Control (403 Forbidden Guard)**:
+  - Rute Back Office (`?page=admin`) diproteksi penuh.
+  - Pengguna tamu (belum login) atau pembeli biasa dilarang masuk dan diarahkan ke layar **403 Forbidden**.
+  - Hanya dapat diakses oleh akun dengan role `admin`.
+* **Manajemen Transaksi Masuk**:
+  - Monitoring seluruh invoice pembeli secara real-time.
+  - Filter status transaksi & pencarian instan invoice/pembeli.
+  - Update status pesanan langsung (*Menunggu Konfirmasi ➔ Diproses ➔ Dikirim ➔ Selesai ➔ Dibatalkan*) yang langsung tersinkron ke pembeli.
+* **Manajemen Katalog & Stok**:
+  - Mengelola etalase produk, update harga, persentase diskon, dan stok barang.
+* **Statistik & Analitik Penjualan**:
+  - KPI Omset / Total Pendapatan, jumlah pesanan sukses, dan rata-rata nilai transaksi.
+
+---
+
+## 🛠️ Arsitektur & Teknologi (Tech Stack)
+
+| Layer | Teknologi | Deskripsi |
+| :--- | :--- | :--- |
+| **Frontend Framework** | React 19 + Vite 6 | Komponen fungsional modern, hooks, dan lazy loading |
+| **Styling** | Vanilla CSS | Custom Tokopedei Design Tokens, responsive grid, micro-animations |
+| **Deployment** | Vercel | Otomatisasi CI/CD dari branch `main` GitHub |
+| **Backend API** | Go (Golang) + Gin | RESTful API berkecepatan tinggi dengan caching & connection pooling |
+| **Database** | MongoDB | Basis data pesanan, produk, ulasan, dan pengguna |
+| **Infrastruktur VPS** | Docker Container | Containerized backend & database pada droplet cloud VPS |
+
+---
+
+## 🚀 Panduan Menjalankan Proyek (Getting Started)
+
+### 1. Clone Repositori
+```bash
+git clone https://github.com/mazkev/tokopedia-react.git
+cd tokopedia-react
+```
+
+### 2. Instalasi Dependensi
+```bash
+npm install
+```
+
+### 3. Jalankan Local Development Server
+```bash
+npm run dev
+```
+Buka browser di: `http://localhost:5173/`
+
+### 4. Build untuk Produksi
+```bash
+npm run build
+```
+
+---
+
+## 🔐 Kredensial Pengujian (Demo Accounts)
+
+### Akun Administrator (Back Office Access)
+* **URL**: [https://tokopedia-react.vercel.app/?page=admin](https://tokopedia-react.vercel.app/?page=admin)
+* **Email**: `admin@tokopedia.com`
+* **Kata Sandi**: `admin123`
+
+### Akun Pembeli (Customer)
+* Pengguna dapat langsung mendaftarkan akun baru melalui menu **Daftar** di pojok kanan atas, atau masuk dengan akun yang sudah dibuat saat pengujian:
+  - **Email**: `kevin_test@tokopedei.com`
+  - **Kata Sandi**: `Password123!`
+
+---
+
+## 📁 Struktur Direktori
+
+```text
+tokopedia-react/
+├── public/
+│   ├── favicon.ico
+│   ├── tokopedei-icon.svg       # Favicon & Logo Tokopedei
+│   └── robots.txt
+├── src/
+│   ├── assets/                 # Asset gambar & ikon
+│   ├── components/
+│   │   ├── AdminDashboard.jsx  # Back Office & Manajemen Toko
+│   │   ├── AuthPage.jsx        # Login & Registrasi Pengguna
+│   │   ├── CartPage.jsx        # Keranjang belanja & Checkbox seleksi
+│   │   ├── Header.jsx          # Navbar, Search, Wishlist, & User Dropdown
+│   │   ├── OrdersPage.jsx      # Daftar transaksi, Batalkan, & Beli Lagi
+│   │   ├── PaymentPage.jsx     # Alamat pengiriman, Jasa kurir, & Pembayaran
+│   │   ├── ProductCard.jsx     # Kartu katalog produk
+│   │   ├── ProductDetail.jsx   # Galeri foto, Varian, Tab ulasan, & Rekomendasi
+│   │   └── WishlistPage.jsx    # Halaman barang favorit tersimpan
+│   ├── services/
+│   │   └── api.js              # Integrasi REST API backend & local fallbacks
+│   ├── App.jsx                 # Routing utama & State Management
+│   └── index.css               # Desain sistem & Styling global
+├── package.json
+└── README.md
+```
+
+---
+
+Developed with ❤️ by **Mazkev**.
