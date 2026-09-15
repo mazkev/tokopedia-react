@@ -5,7 +5,7 @@ function formatPrice(n) {
 }
 
 export default function PaymentPage({ items = [], user, appliedVoucher, onConfirm, onCancel }) {
-  const [selectedMethod, setSelectedMethod] = useState('gopay');
+  const [selectedMethod, setSelectedMethod] = useState('qris');
   const [selectedShipping, setSelectedShipping] = useState('free');
 
   // Alamat Pengiriman
@@ -27,9 +27,10 @@ export default function PaymentPage({ items = [], user, appliedVoucher, onConfir
   ];
 
   const paymentMethods = [
+    { id: 'qris', name: 'QRIS', icon: '📲', desc: 'Scan QR pakai GoPay, OVO, Dana, BCA Mobile', badge: 'POPULER' },
+    { id: 'va', name: 'BCA Virtual Account', icon: '🏦', desc: 'Transfer bank otomatis (BCA, Mandiri, BNI)' },
     { id: 'gopay', name: 'GoPay', icon: '📱', desc: 'Bayar instan pakai saldo GoPay' },
     { id: 'ovo', name: 'OVO', icon: '🟣', desc: 'Bayar pakai saldo OVO' },
-    { id: 'va', name: 'Virtual Account', icon: '🏦', desc: 'Transfer bank otomatis (BCA, Mandiri, BNI)' },
     { id: 'cc', name: 'Kartu Kredit', icon: '💳', desc: 'Visa, Mastercard, JCB' },
   ];
 

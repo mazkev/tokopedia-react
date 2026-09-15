@@ -131,41 +131,26 @@ export default function PaymentModal({ order, onClose, onSuccess }) {
                 <div className="qris-header">
                   <span className="qris-brand">QRIS</span>
                   <span className="gpn-brand">GPN</span>
+                  <span className="qris-tag-auto">Pembayaran Instan</span>
                 </div>
                 <div className="qris-qr-frame">
-                  <div className="qr-box-pattern">
-                    {/* SVG Realistic QR Code */}
-                    <svg width="170" height="170" viewBox="0 0 100 100" fill="#222">
-                      <rect x="0" y="0" width="30" height="30" fill="#111" />
-                      <rect x="5" y="5" width="20" height="20" fill="#fff" />
-                      <rect x="10" y="10" width="10" height="10" fill="#111" />
-
-                      <rect x="70" y="0" width="30" height="30" fill="#111" />
-                      <rect x="75" y="5" width="20" height="20" fill="#fff" />
-                      <rect x="80" y="10" width="10" height="10" fill="#111" />
-
-                      <rect x="0" y="70" width="30" height="30" fill="#111" />
-                      <rect x="5" y="75" width="20" height="20" fill="#fff" />
-                      <rect x="10" y="80" width="10" height="10" fill="#111" />
-
-                      {/* Random Data Dots */}
-                      <rect x="36" y="8" width="6" height="6" />
-                      <rect x="48" y="12" width="6" height="6" />
-                      <rect x="36" y="24" width="6" height="6" />
-                      <rect x="8" y="44" width="6" height="6" />
-                      <rect x="20" y="52" width="6" height="6" />
-                      <rect x="42" y="40" width="16" height="16" fill="#03AC0E" />
-                      <rect x="72" y="44" width="6" height="6" />
-                      <rect x="84" y="56" width="6" height="6" />
-                      <rect x="44" y="72" width="6" height="6" />
-                      <rect x="56" y="80" width="6" height="6" />
-                      <rect x="78" y="76" width="6" height="6" />
-                      <rect x="88" y="84" width="6" height="6" />
-                    </svg>
+                  <div className="qr-scan-wrapper">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`TOKOPEDIA-PAY:${order.invoiceNumber}:${order.total}:LUNAS`)}`}
+                      alt="QRIS Tokopedia Pay" 
+                      className="qris-image"
+                      width="190"
+                      height="190"
+                    />
+                    <div className="qr-scan-laser"></div>
                   </div>
                 </div>
+                <div className="qris-badge-row">
+                  <span className="qris-nmID">NMID: ID1020039201948</span>
+                  <span className="qris-verif">✓ Real-time Scannable</span>
+                </div>
                 <p className="qris-hint">
-                  Scan QR code di atas menggunakan <b>GoPay, BCA Mobile, OVO, ShopeePay, Dana</b>, atau aplikasi m-Banking apa saja.
+                  Arahkan kamera HP Anda atau buka <b>GoPay, BCA Mobile, OVO, Dana, ShopeePay</b> untuk scan QR code resmi di atas.
                 </p>
               </div>
             ) : isGoPay || isOVO ? (
@@ -269,7 +254,7 @@ export default function PaymentModal({ order, onClose, onSuccess }) {
                     <span className="spinner-dots"></span> Memverifikasi Pembayaran...
                   </span>
                 ) : (
-                  <>⚡ Simulasikan Pembayaran Berhasil</>
+                  <>{isQRIS ? '⚡ Simulasikan Scan QRIS Sukses' : '⚡ Simulasikan Pembayaran Berhasil'}</>
                 )}
               </button>
               <p className="pay-simulation-notice">
