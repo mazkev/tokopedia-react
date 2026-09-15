@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { api } from '../services/api';
 
 function formatPrice(n) {
   return 'Rp' + n.toLocaleString('id-ID');
 }
 
-export default function AdminDashboard({ orders, products, onUpdateStatus, onUpdateProduct, onGoHome, onLogout }) {
+export default function AdminDashboard({ orders, products, onUpdateStatus, onUpdateProduct, onAddProduct, onGoHome, onLogout }) {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'products', 'statistics', 'profile', 'config'
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [productModal, setProductModal] = useState(null); // { mode: 'add' | 'edit', data: { ... } }
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef(null);
 
   // Shop & Config states
   const [shopInfo, setShopInfo] = useState({
@@ -51,10 +55,90 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
 
   const statusOptions = ['Menunggu Konfirmasi', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'];
 
-  const handleProductEdit = (e) => {
+  const handleOpenAddProduct = () => {
+    setProductModal({
+      mode: 'add',
+      data: {
+        name: '',
+        price: '',
+        originalPrice: '',
+        discount: 0,
+        category: 'Elektronik',
+        stock: 50,
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
+        badge: 'official',
+        condition: 'Baru',
+        shop: shopInfo.name,
+        location: shopInfo.location,
+        rating: 5.0,
+        sold: 0
+      }
+    });
+    setUploadError('');
+  };
+
+  const handleOpenEditProduct = (product) => {
+    setProductModal({
+      mode: 'edit',
+      data: { ...product }
+    });
+    setUploadError('');
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Ukuran file terlalu besar, maksimal 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError('');
+
+    try {
+      const res = await api.uploadProductImage(file);
+      if (res && (res.imageUrl || res.path)) {
+        const finalUrl = res.imageUrl || res.path;
+        setProductModal(prev => ({
+          ...prev,
+          data: { ...prev.data, image: finalUrl }
+        }));
+      }
+    } catch (err) {
+      console.warn("Gagal upload ke server, fallback preview lokal:", err);
+      const previewUrl = URL.createObjectURL(file);
+      setProductModal(prev => ({
+        ...prev,
+        data: { ...prev.data, image: previewUrl }
+      }));
+      setUploadError("Mode offline: Menggunakan preview lokal.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSaveProductModal = async (e) => {
     e.preventDefault();
-    onUpdateProduct(editingProduct);
-    setEditingProduct(null);
+    if (!productModal) return;
+
+    const data = {
+      ...productModal.data,
+      price: parseInt(productModal.data.price) || 0,
+      stock: parseInt(productModal.data.stock) || 10,
+      discount: parseInt(productModal.data.discount) || 0,
+      originalPrice: productModal.data.originalPrice ? parseInt(productModal.data.originalPrice) : (parseInt(productModal.data.price) || 0),
+    };
+
+    if (productModal.mode === 'edit') {
+      onUpdateProduct(data);
+    } else if (productModal.mode === 'add') {
+      if (onAddProduct) {
+        await onAddProduct(data);
+      }
+    }
+    setProductModal(null);
   };
 
   const handleShopUpdate = (e) => {
@@ -270,7 +354,7 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button className="btn-add-product">➕ Tambah Produk</button>
+              <button className="btn-add-product" onClick={handleOpenAddProduct}>➕ Tambah Produk</button>
             </div>
 
             <div className="admin-table-wrapper">
@@ -304,7 +388,7 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
                         </div>
                       </td>
                       <td>
-                        <button className="btn-edit-product" onClick={() => setEditingProduct(product)}>Edit</button>
+                        <button className="btn-edit-product" onClick={() => handleOpenEditProduct(product)}>Edit</button>
                       </td>
                     </tr>
                   ))}
@@ -485,46 +569,152 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
           </div>
         </div>
       )}
-      {/* Product Edit Modal */}
-      {editingProduct && (
-        <div className="admin-modal-overlay" onClick={() => setEditingProduct(null)}>
-          <div className="admin-modal" onClick={e => e.stopPropagation()}>
+      {/* Product Add & Edit Modal with Image Upload */}
+      {productModal && (
+        <div className="admin-modal-overlay" onClick={() => setProductModal(null)}>
+          <div className="admin-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
             <div className="modal-header">
-              <h2>Edit Produk</h2>
-              <button className="close-modal" onClick={() => setEditingProduct(null)}>×</button>
+              <h2>{productModal.mode === 'add' ? 'Tambah Produk Baru' : 'Edit Produk'}</h2>
+              <button className="close-modal" onClick={() => setProductModal(null)}>×</button>
             </div>
-            <form onSubmit={handleProductEdit}>
-              <div className="modal-body">
+            <form onSubmit={handleSaveProductModal}>
+              <div className="modal-body" style={{ maxHeight: '72vh', overflowY: 'auto' }}>
                 <div className="form-group">
                   <label>Nama Produk</label>
                   <input 
                     type="text" 
-                    value={editingProduct.name}
-                    onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                    value={productModal.data.name}
+                    onChange={(e) => setProductModal({...productModal, data: {...productModal.data, name: e.target.value}})}
+                    placeholder="Contoh: Sony WH-1000XM5 Wireless Headphones"
                     required 
                   />
                 </div>
-                <div className="form-group">
-                  <label>Harga (Rp)</label>
-                  <input 
-                    type="number" 
-                    value={editingProduct.price}
-                    onChange={(e) => setEditingProduct({...editingProduct, price: parseInt(e.target.value)})}
-                    required 
-                  />
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div className="form-group">
+                    <label>Harga (Rp)</label>
+                    <input 
+                      type="number" 
+                      value={productModal.data.price}
+                      onChange={(e) => setProductModal({...productModal, data: {...productModal.data, price: e.target.value}})}
+                      placeholder="150000"
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Stok Barang</label>
+                    <input 
+                      type="number" 
+                      value={productModal.data.stock || 10}
+                      onChange={(e) => setProductModal({...productModal, data: {...productModal.data, stock: e.target.value}})}
+                      required 
+                    />
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Kategori</label>
-                  <input 
-                    type="text" 
-                    value={editingProduct.category}
-                    onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
-                    required 
-                  />
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div className="form-group">
+                    <label>Kategori</label>
+                    <select
+                      value={productModal.data.category}
+                      onChange={(e) => setProductModal({...productModal, data: {...productModal.data, category: e.target.value}})}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #D1D5DB' }}
+                    >
+                      <option value="Elektronik">Elektronik</option>
+                      <option value="Fashion Pria">Fashion Pria</option>
+                      <option value="Fashion Wanita">Fashion Wanita</option>
+                      <option value="Perhiasan">Perhiasan</option>
+                      <option value="Handphone & Tablet">Handphone & Tablet</option>
+                      <option value="Komputer & Laptop">Komputer & Laptop</option>
+                      <option value="Kesehatan">Kesehatan</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Badge Toko</label>
+                    <select
+                      value={productModal.data.badge || 'official'}
+                      onChange={(e) => setProductModal({...productModal, data: {...productModal.data, badge: e.target.value}})}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #D1D5DB' }}
+                    >
+                      <option value="official">Official Store</option>
+                      <option value="power-merchant">Power Merchant</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* AREA UPLOAD FOTO PRODUK */}
+                <div className="form-group" style={{ marginTop: '10px' }}>
+                  <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Foto Produk (Self-Hosted Storage)</span>
+                    <span style={{ fontSize: '11px', color: '#03AC0E', fontWeight: 600 }}>Tersimpan di VPS</span>
+                  </label>
+
+                  {/* Preview Foto */}
+                  {productModal.data.image && (
+                    <div className="product-image-preview-card">
+                      <img src={productModal.data.image} alt="Preview" className="preview-thumb" />
+                      <div className="preview-details">
+                        <p className="preview-status">✓ Foto Terpilih</p>
+                        <p className="preview-url">{productModal.data.image.length > 55 ? productModal.data.image.substring(0, 55) + '...' : productModal.data.image}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dropzone Upload Button */}
+                  <div 
+                    className="admin-dropzone-upload"
+                    onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileChange} 
+                      accept="image/png, image/jpeg, image/jpg, image/webp" 
+                      style={{ display: 'none' }}
+                    />
+                    <div className="dropzone-content">
+                      <span className="dropzone-icon">📸</span>
+                      <p className="dropzone-title">
+                        {isUploading ? 'Mengunggah foto ke server VPS...' : 'Klik untuk pilih foto dari komputer / HP'}
+                      </p>
+                      <p className="dropzone-subtitle">Mendukung format PNG, JPG, JPEG, WEBP (Maksimal 5MB)</p>
+                    </div>
+                  </div>
+
+                  {isUploading && (
+                    <div className="upload-progress-indicator">
+                      <div className="upload-spinner"></div>
+                      <span>Sedang menyimpan ke Docker VPS storage...</span>
+                    </div>
+                  )}
+
+                  {uploadError && (
+                    <p style={{ fontSize: '12px', color: '#D97706', marginTop: '6px' }}>{uploadError}</p>
+                  )}
+
+                  {/* Fallback URL Input */}
+                  <div style={{ marginTop: '10px' }}>
+                    <span style={{ fontSize: '11px', color: '#6B7280' }}>Atau tempel URL gambar langsung:</span>
+                    <input 
+                      type="text" 
+                      value={productModal.data.image} 
+                      onChange={(e) => setProductModal({...productModal, data: {...productModal.data, image: e.target.value}})}
+                      placeholder="https://..."
+                      style={{ marginTop: '4px', fontSize: '12px' }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button type="submit" className="btn-auth-submit">Simpan Perubahan</button>
+              <div className="modal-footer" style={{ marginTop: '14px', borderTop: '1px solid #E5E7EB', paddingTop: '14px' }}>
+                <button type="button" className="btn-cancel" onClick={() => setProductModal(null)}>Batal</button>
+                <button 
+                  type="submit" 
+                  className="btn-auth-submit" 
+                  disabled={isUploading}
+                  style={{ background: 'var(--green-primary)', color: 'white', fontWeight: 700 }}
+                >
+                  {productModal.mode === 'add' ? '➕ Tambah ke Katalog' : 'Simpan Perubahan'}
+                </button>
               </div>
             </form>
           </div>

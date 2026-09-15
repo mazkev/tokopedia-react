@@ -164,6 +164,23 @@ export default function App() {
     addNotification(`Produk "${updatedProduct.name}" berhasil diupdate!`);
   };
 
+  const handleAddProduct = async (newProductData) => {
+    let created;
+    try {
+      created = await api.createProduct(newProductData);
+    } catch (err) {
+      console.warn("Gagal simpan produk baru ke API:", err);
+      created = {
+        ...newProductData,
+        id: 'PROD-' + Date.now()
+      };
+    }
+    const finalProd = created && created.id ? created : { ...newProductData, id: (created && created._id) || 'PROD-' + Date.now() };
+    setProducts(prev => [finalProd, ...prev]);
+    addNotification(`Produk "${finalProd.name}" berhasil ditambahkan ke katalog!`);
+    return finalProd;
+  };
+
   const handleLogin = async (credentials) => {
     try {
       const resp = await api.login(credentials);
@@ -568,6 +585,7 @@ export default function App() {
               products={products}
               onUpdateStatus={updateOrderStatus} 
               onUpdateProduct={handleUpdateProduct}
+              onAddProduct={handleAddProduct}
               onGoHome={goHome}
               onLogout={handleLogout}
               addNotification={addNotification}

@@ -59,6 +59,37 @@ export const api = {
     return data.data || [];
   },
 
+  async createProduct(productData) {
+    const res = await fetch(`${API_BASE_URL}/products`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(productData),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal menambahkan produk');
+    return data.data;
+  },
+
+  async uploadProductImage(file) {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/products/upload`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal mengunggah gambar');
+    return data;
+  },
+
   async updateProduct(id, productData) {
     const res = await fetch(`${API_BASE_URL}/products/${id}`, {
       method: 'PUT',

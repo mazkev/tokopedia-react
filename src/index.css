@@ -3318,6 +3318,111 @@ input:checked + .slider:before { transform: translateX(20px); }
   border: 1px solid #FCD34D;
 }
 
+/* ============================================================
+   ADMIN PRODUCT IMAGE UPLOAD & PREVIEW STYLES
+============================================================ */
+.product-image-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+}
+
+.product-image-preview-card .preview-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+}
+
+.product-image-preview-card .preview-details {
+  flex: 1;
+  overflow: hidden;
+}
+
+.product-image-preview-card .preview-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: #03AC0E;
+  margin: 0 0 2px 0;
+}
+
+.product-image-preview-card .preview-url {
+  font-size: 11px;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.admin-dropzone-upload {
+  border: 2px dashed #CBD5E1;
+  border-radius: 12px;
+  background: #F8FAFC;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.admin-dropzone-upload:hover {
+  border-color: var(--green-primary);
+  background: #F0FDF4;
+}
+
+.dropzone-content .dropzone-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.dropzone-content .dropzone-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0 0 4px 0;
+}
+
+.dropzone-content .dropzone-subtitle {
+  font-size: 11px;
+  color: #64748B;
+  margin: 0;
+}
+
+.upload-progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #1D4ED8;
+  font-weight: 600;
+}
+
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #93C5FD;
+  border-top-color: #2563EB;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
 
 
 
