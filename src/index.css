@@ -2245,6 +2245,339 @@ ul { list-style: none; }
 }
 .btn-icon-view:hover { background: #EEE; }
 
+.btn-icon-print {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-icon-print:hover {
+  background: #DBEAFE;
+  transform: scale(1.06);
+}
+
+.btn-export-csv {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.btn-export-csv:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+.btn-print-order-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #EFF6FF;
+  border: 1px solid #3B82F6;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1D4ED8;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-print-order-label:hover {
+  background: #3B82F6;
+  color: white;
+}
+
+.btn-action-print-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--green-primary);
+  color: white;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 170, 19, 0.25);
+  transition: all 0.2s;
+}
+.btn-action-print-now:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+}
+
+/* Shipping Label Sheet (Thermal 100x150mm & A4 Ready) */
+.shipping-label-modal-wrapper {
+  max-width: 580px !important;
+  border-radius: 16px;
+}
+
+.shipping-label-sheet {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border: 2px solid #1E293B;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 16px 18px;
+  color: #0F172A;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.label-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #0F172A;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.label-brand-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.label-brand-name {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--green-primary);
+  letter-spacing: -0.5px;
+  display: block;
+}
+
+.label-service-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  background: #E8F5E9;
+  color: var(--green-dark);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.label-courier-block {
+  text-align: right;
+}
+
+.courier-badge {
+  font-size: 14px;
+  font-weight: 900;
+  color: #0F172A;
+  background: #F1F5F9;
+  border: 1.5px solid #0F172A;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: block;
+  letter-spacing: 0.5px;
+}
+
+.shipping-type-text {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #059669;
+  margin-top: 3px;
+  display: block;
+}
+
+.label-barcode-section {
+  text-align: center;
+  border-bottom: 1.5px dashed #64748B;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.barcode-bars {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.barcode-number {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #000;
+}
+
+.booking-sub {
+  font-size: 11px;
+  color: #334155;
+  margin-top: 2px;
+}
+
+.label-address-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-bottom: 2px solid #0F172A;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.label-address-box {
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 10.5px;
+}
+
+.label-address-box .box-title {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #64748B;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.label-address-box .person-name {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.label-address-box .person-phone {
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.label-address-box .person-address {
+  line-height: 1.35;
+  color: #475569;
+}
+
+.order-meta-mini {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed #CBD5E1;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.label-manifest-section {
+  border-bottom: 1.5px dashed #64748B;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.manifest-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.label-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5px;
+}
+
+.label-items-table th {
+  text-align: left;
+  border-bottom: 1px solid #CBD5E1;
+  padding: 4px 6px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.label-items-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+
+.label-items-table .item-name-cell {
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.label-footer-instruction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.warning-pill {
+  font-size: 8.5px;
+  font-weight: 900;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #FCD34D;
+  white-space: nowrap;
+}
+
+.unboxing-note {
+  font-size: 8.5px;
+  color: #64748B;
+  line-height: 1.3;
+  margin: 0;
+}
+
+/* Print Rules for Thermal Sticker / Paper */
+@media print {
+  body {
+    background: white !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .shipping-label-sheet, .shipping-label-sheet * {
+    visibility: visible;
+  }
+  .shipping-label-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 440px !important;
+    margin: 0 auto !important;
+    border: 2px solid #000 !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+    page-break-inside: avoid;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
 /* Modal Styles */
 .admin-modal-overlay {
   position: fixed;

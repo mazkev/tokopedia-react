@@ -5,11 +5,12 @@ function formatPrice(n) {
   return 'Rp' + n.toLocaleString('id-ID');
 }
 
-export default function AdminDashboard({ orders, products, onUpdateStatus, onUpdateProduct, onAddProduct, onGoHome, onLogout }) {
+export default function AdminDashboard({ orders, products, onUpdateStatus, onUpdateProduct, onAddProduct, onGoHome, onLogout, addNotification }) {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'products', 'statistics', 'profile', 'config'
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [shippingLabelOrder, setShippingLabelOrder] = useState(null);
   const [productModal, setProductModal] = useState(null); // { mode: 'add' | 'edit', data: { ... } }
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -54,6 +55,55 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
   });
 
   const statusOptions = ['Menunggu Konfirmasi', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'];
+
+  // Export orders to CSV file (UTF-8 with BOM for Excel)
+  const handleExportCSV = () => {
+    if (!filteredOrders || filteredOrders.length === 0) {
+      if (addNotification) addNotification("⚠️ Tidak ada data pesanan untuk diekspor.");
+      return;
+    }
+
+    const headers = [
+      "No Invoice",
+      "Tanggal Transaksi",
+      "Nama Pembeli",
+      "ID Pembeli",
+      "Total Belanja (Rp)",
+      "Metode Pembayaran",
+      "Status Pesanan",
+      "Daftar Barang"
+    ];
+
+    const rows = filteredOrders.map(o => {
+      const itemsDetail = o.items ? o.items.map(it => `${it.name} (x${it.qty || 1})`).join('; ') : '';
+      return [
+        `"${o.id || ''}"`,
+        `"${o.date || ''}"`,
+        `"${(o.userName || '').replace(/"/g, '""')}"`,
+        `"${(o.userId || '').replace(/"/g, '""')}"`,
+        o.total || 0,
+        `"${o.paymentMethod?.toUpperCase() || 'QRIS'}"`,
+        `"${o.status || ''}"`,
+        `"${itemsDetail.replace(/"/g, '""')}"`
+      ].join(',');
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.setAttribute('download', `Laporan_Penjualan_Tokopedei_${today}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    if (addNotification) {
+      addNotification(`📥 Berhasil mengekspor ${filteredOrders.length} data pesanan ke file CSV!`);
+    }
+  };
 
   const handleOpenAddProduct = () => {
     setProductModal({
@@ -351,17 +401,28 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="toolbar-filters">
-                {['Semua', ...statusOptions].map(status => (
-                  <button 
-                    key={status}
-                    className={filterStatus === status ? 'active' : ''}
-                    onClick={() => setFilterStatus(status)}
-                  >
-                    {status}
-                  </button>
-                ))}
+              <div className="toolbar-actions-right">
+                <button 
+                  type="button" 
+                  className="btn-export-csv"
+                  onClick={handleExportCSV}
+                  title="Unduh laporan transaksi aktif ke file CSV"
+                >
+                  <span>📥</span> Export Laporan (CSV)
+                </button>
               </div>
+            </div>
+
+            <div className="toolbar-filters" style={{ marginBottom: '20px' }}>
+              {['Semua', ...statusOptions].map(status => (
+                <button 
+                  key={status}
+                  className={filterStatus === status ? 'active' : ''}
+                  onClick={() => setFilterStatus(status)}
+                >
+                  {status}
+                </button>
+              ))}
             </div>
 
             <div className="admin-table-wrapper">
@@ -419,7 +480,14 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
                               <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
-                          <button className="btn-icon-view" onClick={() => setSelectedOrder(order)} title="Detail">👁️</button>
+                          <button className="btn-icon-view" onClick={() => setSelectedOrder(order)} title="Detail Transaksi">👁️</button>
+                          <button 
+                            className="btn-icon-print" 
+                            onClick={() => setShippingLabelOrder(order)} 
+                            title="Cetak Label Pengiriman"
+                          >
+                            🖨️
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -488,6 +556,22 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
 
         {activeTab === 'statistics' && (
           <div className="admin-stats-page">
+            <div className="stats-top-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: 'white', padding: '16px 20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>Ringkasan & Pembukuan Penjualan</h3>
+                <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#64748B' }}>
+                  Unduh pembukuan komprehensif seluruh transaksi untuk rekap omzet toko.
+                </p>
+              </div>
+              <button 
+                type="button" 
+                className="btn-export-csv"
+                onClick={handleExportCSV}
+                title="Download pembukuan penjualan ke file CSV"
+              >
+                <span>📥</span> Unduh Rekap Transaksi (CSV)
+              </button>
+            </div>
             <div className="stats-grid">
               <div className="stats-main-chart card-v2">
                 <h3>Tren Penjualan (7 Hari Terakhir)</h3>
@@ -648,7 +732,19 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
                   ))}
                 </div>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button 
+                  type="button" 
+                  className="btn-print-order-label"
+                  onClick={() => {
+                    const ord = selectedOrder;
+                    setSelectedOrder(null);
+                    setShippingLabelOrder(ord);
+                  }}
+                  title="Cetak label pengiriman ekspedisi untuk pesanan ini"
+                >
+                  <span>🖨️</span> Cetak Label Pengiriman
+                </button>
                 <div className="total-row">
                   <span>Total Pembayaran:</span>
                   <span className="total-val">{formatPrice(selectedOrder.total)}</span>
@@ -658,6 +754,129 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
           </div>
         </div>
       )}
+
+      {/* SHIPPING LABEL MODAL (PRINT READY) */}
+      {shippingLabelOrder && (
+        <div className="admin-modal-overlay shipping-label-modal-overlay" onClick={() => setShippingLabelOrder(null)}>
+          <div className="admin-modal shipping-label-modal-wrapper" onClick={e => e.stopPropagation()}>
+            <div className="modal-header no-print">
+              <div>
+                <h2>Label Pengiriman Pesanan</h2>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0' }}>
+                  Format Standar Ekspedisi E-Commerce (Thermal 100x150mm / Kertas A4)
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button 
+                  type="button" 
+                  className="btn-action-print-now"
+                  onClick={() => window.print()}
+                  title="Buka dialog printer atau simpan sebagai PDF"
+                >
+                  <span>🖨️</span> Cetak Sekarang
+                </button>
+                <button className="close-modal" onClick={() => setShippingLabelOrder(null)}>×</button>
+              </div>
+            </div>
+
+            <div className="modal-body" style={{ background: '#F8FAFC', padding: '24px', display: 'flex', justifyContent: 'center' }}>
+              {/* THERMAL SHIPPING LABEL SHEET */}
+              <div className="shipping-label-sheet" id="printable-shipping-label">
+                {/* Header Platform & Kurir */}
+                <div className="label-header">
+                  <div className="label-brand-block">
+                    <img src="/tokopedei-icon.svg" alt="Tokopedei" className="label-logo" />
+                    <div>
+                      <span className="label-brand-name">tokopedei</span>
+                      <span className="label-service-badge">OFFICIAL STORE</span>
+                    </div>
+                  </div>
+                  <div className="label-courier-block">
+                    <span className="courier-badge">JNE REG</span>
+                    <span className="shipping-type-text">NON-COD (LUNAS)</span>
+                  </div>
+                </div>
+
+                {/* Barcode Resi & Booking Code */}
+                <div className="label-barcode-section">
+                  <div className="barcode-bars">
+                    <svg width="280" height="46" viewBox="0 0 280 46">
+                      {[10, 18, 25, 34, 40, 48, 56, 68, 75, 82, 90, 102, 110, 122, 130, 142, 150, 162, 170, 182, 190, 202, 210, 222, 230, 242, 250, 262].map((pos, idx) => (
+                        <rect key={idx} x={pos} y="0" width={(idx % 3 === 0 ? 3.5 : (idx % 2 === 0 ? 2 : 1.5))} height="46" fill="#000" />
+                      ))}
+                    </svg>
+                  </div>
+                  <div className="barcode-number">
+                    {shippingLabelOrder.id.replace('INV-', 'TKP-JNE-')}
+                  </div>
+                  <div className="booking-sub">
+                    No. Resi: <b>JP{Math.abs(shippingLabelOrder.id.split('').reduce((a,b)=>(((a<<5)-a)+b.charCodeAt(0))|0, 0)).toString().slice(0, 10)}</b>
+                  </div>
+                </div>
+
+                {/* Alamat Penerima & Pengirim */}
+                <div className="label-address-grid">
+                  <div className="label-address-box receiver-box">
+                    <div className="box-title">PENERIMA (KEPADA):</div>
+                    <div className="person-name">{shippingLabelOrder.userName}</div>
+                    <div className="person-phone">0812-8821-4920</div>
+                    <div className="person-address">
+                      Jl. Sudirman Boulevard No. 88, Gedung Perkantoran Lt. 12, Karet Semanggi, Setiabudi, Jakarta Selatan, DKI Jakarta 12930
+                    </div>
+                  </div>
+
+                  <div className="label-address-box sender-box">
+                    <div className="box-title">PENGIRIM (DARI):</div>
+                    <div className="person-name">{shopInfo.name}</div>
+                    <div className="person-phone">(021) 8062-8888</div>
+                    <div className="person-address">
+                      {shopInfo.location} • Tokopedei Fulfillment Center
+                    </div>
+                    <div className="order-meta-mini">
+                      <span>Tgl: {shippingLabelOrder.date}</span>
+                      <span>Berat: 1.0 Kg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Manifest Barang (Packing Slip) */}
+                <div className="label-manifest-section">
+                  <div className="manifest-title">ISI PAKET (DAFTAR BARANG):</div>
+                  <table className="label-items-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '30px' }}>No</th>
+                        <th>Nama Produk</th>
+                        <th style={{ textAlign: 'center', width: '50px' }}>Qty</th>
+                        <th>Kategori</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {shippingLabelOrder.items.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td className="item-name-cell">{item.name}</td>
+                          <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{item.qty}x</td>
+                          <td>{item.category || 'Barang Elektronik'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Security & Instruction Footer */}
+                <div className="label-footer-instruction">
+                  <div className="warning-pill">⚠️ FRAGILE / JANGAN DIBANTING</div>
+                  <p className="unboxing-note">
+                    Wajib rekam video unboxing saat paket diterima tanpa jeda. Tanpa video unboxing komplain tidak dapat diproses.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Product Add & Edit Modal with Image Upload */}
       {productModal && (
         <div className="admin-modal-overlay" onClick={() => setProductModal(null)}>
