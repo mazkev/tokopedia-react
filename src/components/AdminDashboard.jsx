@@ -152,104 +152,192 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
 
   return (
     <div className="admin-container animate-in">
-      <aside className="admin-sidebar">
-        <div className="admin-profile">
-          <div className="admin-avatar">A</div>
-          <div className="admin-info">
-            <p className="admin-name">Admin Tokopedei</p>
-            <p className="admin-role">Back Office Official</p>
+      {/* SELLER CENTER TOP NAVBAR */}
+      <header className="admin-top-navbar">
+        <div className="admin-top-navbar-left">
+          <div className="admin-brand" onClick={onGoHome} title="Ke Beranda Tokopedei">
+            <img src="/tokopedei-icon.svg" alt="Tokopedei" className="admin-brand-icon" />
+            <div className="admin-brand-text">
+              <span className="admin-brand-title">tokopedei</span>
+              <span className="admin-brand-badge">SELLER CENTER</span>
+            </div>
+          </div>
+          <div className="admin-navbar-divider"></div>
+          <div className="admin-store-status">
+            <span className="status-dot-pulse"></span>
+            <div className="store-status-text">
+              <span className="store-name">{shopInfo.name}</span>
+              <span className="store-badge">Official Store • Aktif</span>
+            </div>
           </div>
         </div>
-        <nav className="admin-nav">
-          <div className="nav-group">
-            <p className="nav-label">MAIN MENU</p>
-            <a 
-              href="#" 
-              className={activeTab === 'orders' ? 'active' : ''} 
-              onClick={() => { setActiveTab('orders'); setSearchQuery(''); }}
-            >
-              📦 Kelola Pesanan
-            </a>
-            <a 
-              href="#" 
-              className={activeTab === 'products' ? 'active' : ''}
-              onClick={() => { setActiveTab('products'); setSearchQuery(''); }}
-            >
-              🛍️ Daftar Produk
-            </a>
-            <a 
-              href="#" 
-              className={activeTab === 'statistics' ? 'active' : ''}
-              onClick={() => { setActiveTab('statistics'); }}
-            >
-              📊 Statistik Penjualan
-            </a>
-          </div>
-          <div className="nav-group">
-            <p className="nav-label">PENGATURAN</p>
-            <a 
-              href="#" 
-              className={activeTab === 'profile' ? 'active' : ''}
-              onClick={() => { setActiveTab('profile'); }}
-            >
-              🏪 Profil Toko
-            </a>
-            <a 
-              href="#" 
-              className={activeTab === 'config' ? 'active' : ''}
-              onClick={() => { setActiveTab('config'); }}
-            >
-              ⚙️ Konfigurasi Sistem
-            </a>
-          </div>
-          <div className="nav-footer">
-            <a href="#" onClick={onGoHome}>🌐 Lihat Toko</a>
-            <a href="#" onClick={onLogout} className="logout">🚪 Keluar</a>
-          </div>
-        </nav>
-      </aside>
 
+        <div className="admin-top-navbar-center">
+          <div className="admin-nav-breadcrumb">
+            <span className="breadcrumb-root">Dashboard</span>
+            <span className="breadcrumb-separator">/</span>
+            <span className="breadcrumb-current">
+              {activeTab === 'orders' && '📦 Kelola Pesanan'}
+              {activeTab === 'products' && '🛍️ Manajemen Produk'}
+              {activeTab === 'statistics' && '📊 Statistik Penjualan'}
+              {activeTab === 'profile' && '🏪 Profil Toko'}
+              {activeTab === 'config' && '⚙️ Konfigurasi Sistem'}
+            </span>
+          </div>
+        </div>
 
-      <main className="admin-content">
-        <header className="admin-header-v2">
-          <div className="header-title">
-            <h1>{
-              activeTab === 'orders' ? 'Pesanan Masuk' : 
-              activeTab === 'products' ? 'Manajemen Produk' : 
-              activeTab === 'statistics' ? 'Statistik Penjualan' :
-              activeTab === 'profile' ? 'Profil Toko' : 'Konfigurasi Sistem'
-            }</h1>
-            <p>{
-              activeTab === 'orders' ? 'Kelola dan proses transaksi pembeli' : 
-              activeTab === 'products' ? 'Atur katalog dan harga produk toko' :
-              activeTab === 'statistics' ? 'Analisis performa penjualan toko' :
-              activeTab === 'profile' ? 'Atur identitas dan branding toko' : 'Pengaturan teknis platform'
-            }</p>
-          </div>
-          <div className="admin-stats-v2">
-            <div className="stat-card-v2">
-              <div className="stat-icon revenue">💰</div>
-              <div className="stat-data">
-                <span className="label">Total Pendapatan</span>
-                <span className="value">{formatPrice(stats.revenue)}</span>
-              </div>
-            </div>
-            <div className="stat-card-v2">
-              <div className="stat-icon orders">📦</div>
-              <div className="stat-data">
-                <span className="label">Total Pesanan</span>
-                <span className="value">{stats.totalOrders}</span>
-              </div>
-            </div>
-            <div className="stat-card-v2">
-              <div className="stat-icon products">🛍️</div>
-              <div className="stat-data">
-                <span className="label">Rata-rata Order</span>
-                <span className="value">{formatPrice(stats.avgOrder)}</span>
-              </div>
+        <div className="admin-top-navbar-right">
+          <button 
+            type="button" 
+            className="admin-btn-quick-add"
+            onClick={handleOpenAddProduct}
+            title="Tambah produk baru ke katalog"
+          >
+            <span>➕</span> Tambah Produk
+          </button>
+
+          <button 
+            type="button" 
+            className="admin-btn-storefront"
+            onClick={onGoHome}
+            title="Kunjungi Toko (Front Office)"
+          >
+            <span>🌐</span> Kunjungi Toko
+          </button>
+
+          <div className="admin-navbar-divider"></div>
+
+          <div className="admin-user-pill">
+            <div className="admin-user-avatar">A</div>
+            <div className="admin-user-meta">
+              <span className="admin-user-name">Admin Tokopedei</span>
+              <span className="admin-user-role">Super Admin</span>
             </div>
           </div>
-        </header>
+
+          <button 
+            type="button" 
+            className="admin-btn-logout"
+            onClick={onLogout}
+            title="Keluar dari akun admin"
+          >
+            <span>🚪</span> Keluar
+          </button>
+        </div>
+      </header>
+
+      {/* ADMIN WORKSPACE (SIDEBAR + MAIN CONTENT) */}
+      <div className="admin-main-layout">
+        <aside className="admin-sidebar">
+          <nav className="admin-nav">
+            <div className="nav-group">
+              <p className="nav-label">MAIN MENU</p>
+              <a 
+                href="#orders" 
+                className={activeTab === 'orders' ? 'active' : ''} 
+                onClick={(e) => { e.preventDefault(); setActiveTab('orders'); setSearchQuery(''); }}
+              >
+                <span className="nav-icon">📦</span>
+                <span className="nav-text">Kelola Pesanan</span>
+                {orders.length > 0 && <span className="nav-badge">{orders.length}</span>}
+              </a>
+              <a 
+                href="#products" 
+                className={activeTab === 'products' ? 'active' : ''}
+                onClick={(e) => { e.preventDefault(); setActiveTab('products'); setSearchQuery(''); }}
+              >
+                <span className="nav-icon">🛍️</span>
+                <span className="nav-text">Daftar Produk</span>
+                <span className="nav-badge-gray">{products.length}</span>
+              </a>
+              <a 
+                href="#statistics" 
+                className={activeTab === 'statistics' ? 'active' : ''}
+                onClick={(e) => { e.preventDefault(); setActiveTab('statistics'); }}
+              >
+                <span className="nav-icon">📊</span>
+                <span className="nav-text">Statistik Penjualan</span>
+              </a>
+            </div>
+            <div className="nav-group">
+              <p className="nav-label">PENGATURAN</p>
+              <a 
+                href="#profile" 
+                className={activeTab === 'profile' ? 'active' : ''}
+                onClick={(e) => { e.preventDefault(); setActiveTab('profile'); }}
+              >
+                <span className="nav-icon">🏪</span>
+                <span className="nav-text">Profil Toko</span>
+              </a>
+              <a 
+                href="#config" 
+                className={activeTab === 'config' ? 'active' : ''}
+                onClick={(e) => { e.preventDefault(); setActiveTab('config'); }}
+              >
+                <span className="nav-icon">⚙️</span>
+                <span className="nav-text">Konfigurasi Sistem</span>
+              </a>
+            </div>
+            <div className="nav-footer">
+              <a href="#store" onClick={(e) => { e.preventDefault(); onGoHome(); }}>🌐 Lihat Toko</a>
+              <a href="#logout" onClick={(e) => { e.preventDefault(); onLogout(); }} className="logout">🚪 Keluar</a>
+            </div>
+          </nav>
+        </aside>
+
+        <main className="admin-content">
+          <header className="admin-header-v2">
+            <div className="admin-header-title-row">
+              <div className="header-title">
+                <h1>{
+                  activeTab === 'orders' ? 'Pesanan Masuk' : 
+                  activeTab === 'products' ? 'Manajemen Produk' : 
+                  activeTab === 'statistics' ? 'Statistik Penjualan' :
+                  activeTab === 'profile' ? 'Profil Toko' : 'Konfigurasi Sistem'
+                }</h1>
+                <p>{
+                  activeTab === 'orders' ? 'Kelola dan proses transaksi pembeli secara real-time' : 
+                  activeTab === 'products' ? 'Atur katalog, stok, dan harga produk toko' :
+                  activeTab === 'statistics' ? 'Analisis performa penjualan dan produk terlaris' :
+                  activeTab === 'profile' ? 'Atur identitas, logo, dan alamat toko resmi' : 'Pengaturan operasional dan sistem platform'
+                }</p>
+              </div>
+              <div className="admin-header-actions">
+                <span className="admin-live-clock">🟢 Backend VPS Terhubung (DigitalOcean)</span>
+              </div>
+            </div>
+
+            <div className="admin-stats-v2">
+              <div className="stat-card-v2">
+                <div className="stat-icon revenue">💰</div>
+                <div className="stat-data">
+                  <span className="label">Total Pendapatan</span>
+                  <span className="value">{formatPrice(stats.revenue)}</span>
+                </div>
+              </div>
+              <div className="stat-card-v2">
+                <div className="stat-icon orders">📦</div>
+                <div className="stat-data">
+                  <span className="label">Total Pesanan</span>
+                  <span className="value">{stats.totalOrders} Transaksi</span>
+                </div>
+              </div>
+              <div className="stat-card-v2">
+                <div className="stat-icon products">🛍️</div>
+                <div className="stat-data">
+                  <span className="label">Total Produk</span>
+                  <span className="value">{stats.totalProducts} Produk</span>
+                </div>
+              </div>
+              <div className="stat-card-v2">
+                <div className="stat-icon pending">📈</div>
+                <div className="stat-data">
+                  <span className="label">Rata-rata Order</span>
+                  <span className="value">{formatPrice(stats.avgOrder)}</span>
+                </div>
+              </div>
+            </div>
+          </header>
 
         {activeTab === 'orders' && (
           <div className="admin-orders-container">
@@ -522,7 +610,8 @@ export default function AdminDashboard({ orders, products, onUpdateStatus, onUpd
             </div>
           </div>
         )}
-      </main>
+        </main>
+      </div>
 
 
       {/* Order Detail Modal */}

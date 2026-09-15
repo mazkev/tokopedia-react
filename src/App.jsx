@@ -529,25 +529,27 @@ export default function App() {
 
   return (
     <div id="app-root">
-      <Header 
-        cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} 
-        cartItems={cartItems}
-        wishlist={wishlist}
-        goWishlist={goWishlist}
-        onToggleWishlist={toggleWishlist}
-        onProductClick={handleProductClick}
-        user={user}
-        goHome={goHome} 
-        goCart={goCart}
-        goOrders={goOrders}
-        goLogin={goLogin}
-        goRegister={goRegister}
-        goAdmin={goAdmin}
-        onLogout={handleLogout}
-        onSearch={handleSearch}
-      />
+      {view !== 'admin' && (
+        <Header 
+          cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} 
+          cartItems={cartItems}
+          wishlist={wishlist}
+          goWishlist={goWishlist}
+          onToggleWishlist={toggleWishlist}
+          onProductClick={handleProductClick}
+          user={user}
+          goHome={goHome} 
+          goCart={goCart}
+          goOrders={goOrders}
+          goLogin={goLogin}
+          goRegister={goRegister}
+          goAdmin={goAdmin}
+          onLogout={handleLogout}
+          onSearch={handleSearch}
+        />
+      )}
 
-      <main>
+      <main className={view === 'admin' ? 'main-admin-full' : ''}>
         <Suspense fallback={<div className="view-loading-spinner" style={{ textAlign: 'center', padding: '60px 20px', color: '#6c727c' }}>Memuat konten...</div>}>
         {view === 'login' && (
           <AuthPage mode="login" onLogin={handleLogin} onSwitch={goRegister} />
@@ -714,7 +716,7 @@ export default function App() {
       </main>
 
       <Notification items={notifications} />
-      <Footer />
+      {view !== 'admin' && <Footer />}
     </div>
   );
 }
