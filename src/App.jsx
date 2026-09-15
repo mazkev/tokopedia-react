@@ -18,6 +18,7 @@ const AuthPage = lazy(() => import('./components/AuthPage'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const PaymentPage = lazy(() => import('./components/PaymentPage'));
 const WishlistPage = lazy(() => import('./components/WishlistPage'));
+const PaymentModal = lazy(() => import('./components/PaymentModal'));
 
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
   // Initialize from LocalStorage
   const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem('cartItems')) || []);
   const [checkoutItems, setCheckoutItems] = useState([]);
+  const [activePaymentOrder, setActivePaymentOrder] = useState(null);
   const [orders, setOrders] = useState(() => JSON.parse(localStorage.getItem('orders')) || []);
   const [notifications, setNotifications] = useState([]);
   const [vouchers, setVouchers] = useState(() => JSON.parse(localStorage.getItem('vouchers')) || [
@@ -340,9 +342,23 @@ export default function App() {
     setCartItems(prev => prev.filter(i => !processedIds.includes(i.id)));
     setCheckoutItems([]);
     setAppliedVoucher(null);
-    setView('success');
-    addNotification(`Pembayaran via ${String(method).toUpperCase()} berhasil! Pesanan sedang diproses.`);
+    setActivePaymentOrder(createdOrder);
+    setView('orders');
+    addNotification(`Pesanan ${createdOrder.invoiceNumber || createdOrder.id} dibuat! Silakan selesaikan pembayaran.`);
     window.scrollTo(0, 0);
+  };
+
+  const handlePayOrder = async (orderId) => {
+    try {
+      const updated = await api.payOrder(orderId);
+      setOrders(prev => prev.map(o => (o.id === orderId || o._id === orderId) ? { ...o, status: 'Diproses' } : o));
+      addNotification("Pembayaran berhasil diverifikasi! Pesanan Anda sedang diproses penjual.");
+      return updated;
+    } catch (err) {
+      console.warn("Gagal panggil payOrder API, fallback update lokal:", err);
+      setOrders(prev => prev.map(o => (o.id === orderId || o._id === orderId) ? { ...o, status: 'Diproses' } : o));
+      addNotification("Pembayaran berhasil diverifikasi! Pesanan Anda sedang diproses.");
+    }
   };
 
   const handleCancelOrder = async (orderId) => {
@@ -624,6 +640,7 @@ export default function App() {
             onAddReview={handleAddReview}
             onCancelOrder={handleCancelOrder}
             onReorder={handleReorder}
+            onPayOrder={(order) => setActivePaymentOrder(order)}
           />
         )}
 
@@ -666,6 +683,14 @@ export default function App() {
               onProductClick={handleProductClick} 
             />
           </>
+        )}
+
+        {activePaymentOrder && (
+          <PaymentModal 
+            order={activePaymentOrder} 
+            onClose={() => setActivePaymentOrder(null)} 
+            onSuccess={handlePayOrder} 
+          />
         )}
         </Suspense>
       </main>

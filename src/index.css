@@ -2791,6 +2791,478 @@ input:checked + .slider:before { transform: translateX(20px); }
   border-color: #9CA3AF;
 }
 
+/* ============================================================
+   TOKOPEDIA PAY - PAYMENT SIMULATION MODAL
+============================================================ */
+.payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.payment-modal-card {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.pay-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tokped-pay-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #E8F5E9;
+  color: #03AC0E;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.pay-secure-tag {
+  font-size: 11px;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.pay-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9CA3AF;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.pay-modal-close:hover {
+  background: #F3F4F6;
+  color: #111827;
+}
+
+.pay-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pay-countdown-banner {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #92400E;
+  font-weight: 600;
+}
+
+.pay-countdown-banner .timer-countdown {
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 800;
+  color: #B45309;
+  background: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #FDE68A;
+}
+
+.pay-amount-box {
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pay-amount-box .amount-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pay-amount-box .amount-info .label {
+  font-size: 11px;
+  color: #6B7280;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.pay-amount-box .amount-info .value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #03AC0E;
+}
+
+.pay-amount-box .invoice-info {
+  text-align: right;
+  font-size: 12px;
+  color: #4B5563;
+}
+
+.pay-amount-box .invoice-info b {
+  display: block;
+  font-size: 12px;
+  color: #111827;
+}
+
+/* Virtual Account */
+.pay-va-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.va-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bank-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #111827;
+}
+
+.bank-auto-tag {
+  background: #EFF6FF;
+  color: #2563EB;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.va-number-card {
+  background: #F3F4F6;
+  border: 1px dashed #D1D5DB;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.va-number-left .va-label {
+  display: block;
+  font-size: 11px;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.va-number-left .va-value {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #1F2937;
+}
+
+.btn-copy-va {
+  background: white;
+  border: 1px solid #D1D5DB;
+  color: #03AC0E;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy-va:hover {
+  background: #E8F5E9;
+  border-color: #03AC0E;
+}
+.btn-copy-va.copied {
+  background: #03AC0E;
+  color: white;
+  border-color: #03AC0E;
+}
+
+/* Panduan Transfer */
+.pay-guides-wrapper {
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.guide-tabs {
+  display: flex;
+  background: #F9FAFB;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.guide-tabs .tab-btn {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.guide-tabs .tab-btn.active {
+  color: #03AC0E;
+  border-bottom-color: #03AC0E;
+  background: white;
+}
+
+.guide-content {
+  padding: 12px 16px;
+  font-size: 12px;
+  color: #4B5563;
+  line-height: 1.6;
+}
+.guide-content ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* QRIS Container */
+.pay-qris-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.qris-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.qris-brand {
+  font-weight: 900;
+  font-size: 18px;
+  color: #EF4444;
+  letter-spacing: 1px;
+}
+
+.gpn-brand {
+  font-weight: 800;
+  font-size: 13px;
+  background: #DC2626;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.qris-qr-frame {
+  background: white;
+  padding: 12px;
+  border: 2px solid #111827;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.qris-hint {
+  font-size: 12px;
+  color: #6B7280;
+  text-align: center;
+  max-width: 320px;
+  margin: 0;
+}
+
+/* E-Wallet */
+.pay-ewallet-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.ewallet-icon-circle {
+  font-size: 36px;
+  background: #F3F4F6;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ewallet-desc {
+  font-size: 12px;
+  color: #6B7280;
+  max-width: 300px;
+  margin: 0;
+}
+
+.ewallet-phone-box {
+  background: #F9FAFB;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Action Button */
+.pay-action-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-simulate-pay {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #03AC0E 0%, #008709 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(3, 172, 14, 0.35);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-simulate-pay:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(3, 172, 14, 0.45);
+}
+.btn-simulate-pay:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pay-simulation-notice {
+  font-size: 11px;
+  color: #9CA3AF;
+  text-align: center;
+  margin: 0;
+}
+
+/* Success Card */
+.pay-success-card {
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.success-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: #E8F5E9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleBounce 0.4s ease-out;
+}
+
+@keyframes scaleBounce {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pay-success-card h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.pay-success-subtitle {
+  font-size: 13px;
+  color: #4B5563;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.pay-success-info-box {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 18px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pay-success-info-box .row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #4B5563;
+}
+
+.btn-finish-payment {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #03AC0E;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-finish-payment:hover {
+  background: #028A0B;
+}
+
+/* Status Badge Menunggu Pembayaran */
+.status-badge-user.menunggu-pembayaran,
+.status-badge-user.menunggu-konfirmasi {
+  background: #FFFBEB;
+  color: #D97706;
+  border: 1px solid #FCD34D;
+}
+
+
 
 
 

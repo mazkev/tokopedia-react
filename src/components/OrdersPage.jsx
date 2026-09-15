@@ -5,8 +5,11 @@ function formatPrice(n) {
 }
 
 function TrackingTimeline({ status }) {
-  const steps = ['Menunggu Konfirmasi', 'Diproses', 'Dikirim', 'Selesai'];
-  const currentIdx = steps.indexOf(status);
+  const steps = ['Menunggu Pembayaran', 'Diproses', 'Dikirim', 'Selesai'];
+  let currentIdx = steps.indexOf(status);
+  if (currentIdx === -1 && status === 'Menunggu Konfirmasi') {
+    currentIdx = 0;
+  }
   
   return (
     <div className="tracking-timeline">
@@ -61,7 +64,7 @@ function ReviewModal({ order, onSave, onCancel }) {
   );
 }
 
-export default function OrdersPage({ orders, onGoHome, onAddReview, onCancelOrder, onReorder }) {
+export default function OrdersPage({ orders, onGoHome, onAddReview, onCancelOrder, onReorder, onPayOrder }) {
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [reviewingOrder, setReviewingOrder] = useState(null);
 
@@ -164,7 +167,29 @@ export default function OrdersPage({ orders, onGoHome, onAddReview, onCancelOrde
 
               <div className="order-card-footer">
                 <div className="footer-actions">
-                  {order.status === 'Menunggu Konfirmasi' && (
+                  {(order.status === 'Menunggu Pembayaran' || order.status === 'Menunggu Konfirmasi') && (
+                    <button 
+                      className="btn-pay-now-order"
+                      style={{
+                        padding: '8px 18px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #03AC0E, #008709)',
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 2px 6px rgba(3, 172, 14, 0.3)'
+                      }}
+                      onClick={() => onPayOrder && onPayOrder(order)}
+                    >
+                      ⚡ Bayar Sekarang
+                    </button>
+                  )}
+                  {(order.status === 'Menunggu Pembayaran' || order.status === 'Menunggu Konfirmasi') && (
                     <button 
                       className="btn-cancel-order"
                       style={{

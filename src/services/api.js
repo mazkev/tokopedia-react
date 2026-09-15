@@ -130,6 +130,16 @@ export const api = {
     return data.data;
   },
 
+  async payOrder(id) {
+    const res = await fetch(`${API_BASE_URL}/orders/${id}/pay`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Pembayaran gagal');
+    return data.data;
+  },
+
   // === REVIEWS ===
   async getProductReviews(productId) {
     try {
