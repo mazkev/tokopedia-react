@@ -4,13 +4,14 @@
 [![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Tokopedia Pay](https://img.shields.io/badge/Payment-Tokopedia%20Pay%20(QRIS%20%2B%20VA)-03AC0E?style=for-the-badge)](https://tokopedia-react.vercel.app)
-[![Backend API](https://img.shields.io/badge/Backend-Go%20(Gin)%20%2B%20MongoDB-00ADD8?style=for-the-badge&logo=go)](http://143.198.166.143:8080)
+[![Backend API](https://img.shields.io/badge/Backend-Go%20(Gin)%20%2B%20MongoDB%20(HTTPS)-00ADD8?style=for-the-badge&logo=go)](https://api.143.198.166.143.sslip.io/api/health)
 
-A production-grade, high-fidelity e-commerce marketplace web application inspired by **Tokopedia**, branded as **TOKOPEDEI**. Built with **React 19** and **Vite**, featuring seamless synchronization between the **Shopper Experience (Front Office)**, **Admin Control (Back Office with RBAC Security)**, an **In-House Tokopedia Pay Payment Simulator**, and a high-performance **Golang + MongoDB** cloud backend.
+A production-grade, high-fidelity e-commerce marketplace web application inspired by **Tokopedia**, branded as **TOKOPEDEI**. Built with **React 19** and **Vite**, featuring seamless synchronization between the **Shopper Experience (Front Office)**, **Admin Control (Back Office with RBAC Security)**, an **In-House Tokopedia Pay Payment Simulator**, and a high-performance **Golang + MongoDB** cloud backend with **SSL/HTTPS**.
 
 🌐 **Live Demo Website**: [https://tokopedia-react.vercel.app](https://tokopedia-react.vercel.app)  
 ⚙️ **Backend Repository**: [https://github.com/mazkev/tokped-backend](https://github.com/mazkev/tokped-backend)  
-📖 **Interactive Swagger API Docs**: [http://143.198.166.143:8080/swagger/doc.json](http://143.198.166.143:8080/swagger/doc.json)
+🔒 **Live Secure API (HTTPS)**: [https://api.143.198.166.143.sslip.io/api/health](https://api.143.198.166.143.sslip.io/api/health)  
+📖 **Interactive Swagger API Docs**: [https://api.143.198.166.143.sslip.io/swagger/index.html](https://api.143.198.166.143.sslip.io/swagger/index.html)
 
 ---
 
