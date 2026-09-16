@@ -232,6 +232,12 @@ export default function App() {
     }
   };
 
+  const handleResetPassword = async (email, newPassword) => {
+    setRegisteredUsers(prev => prev.map(u => u.email === email ? { ...u, password: newPassword } : u));
+    addNotification("✅ Kata sandi berhasil diperbarui! Silakan masuk dengan kata sandi baru.");
+    setView('login');
+  };
+
   const addToCart = (product, qty = 1) => {
     const addQty = typeof qty === 'number' && qty > 0 ? qty : 1;
     setCartItems(prev => {
@@ -552,11 +558,23 @@ export default function App() {
       <main className={view === 'admin' ? 'main-admin-full' : ''}>
         <Suspense fallback={<div className="view-loading-spinner" style={{ textAlign: 'center', padding: '60px 20px', color: '#6c727c' }}>Memuat konten...</div>}>
         {view === 'login' && (
-          <AuthPage mode="login" onLogin={handleLogin} onSwitch={goRegister} />
+          <AuthPage 
+            mode="login" 
+            onLogin={handleLogin} 
+            onSwitch={goRegister} 
+            onResetPassword={handleResetPassword}
+            addNotification={addNotification}
+          />
         )}
 
         {view === 'register' && (
-          <AuthPage mode="register" onRegister={handleRegister} onSwitch={goLogin} />
+          <AuthPage 
+            mode="register" 
+            onRegister={handleRegister} 
+            onSwitch={goLogin} 
+            onResetPassword={handleResetPassword}
+            addNotification={addNotification}
+          />
         )}
 
         {view === 'forbidden' && (
