@@ -186,14 +186,26 @@ export default function App() {
       const resp = await api.login(credentials);
       localStorage.setItem('token', resp.token);
       setUser(resp.user);
-      setView(resp.user.role === 'admin' ? 'admin' : 'home');
+      if (resp.user.role === 'admin') {
+        window.history.pushState({}, '', '?page=admin');
+        setView('admin');
+      } else {
+        window.history.pushState({}, '', window.location.pathname);
+        setView('home');
+      }
       addNotification(`Selamat datang kembali, ${resp.user.name}!`);
     } catch (err) {
       // Fallback akun lokal jika server backend belum siap
       const foundUser = registeredUsers.find(u => u.email === credentials.email && u.password === credentials.password);
       if (foundUser) {
         setUser({ id: foundUser.id, name: foundUser.name, role: foundUser.role });
-        setView(foundUser.role === 'admin' ? 'admin' : 'home');
+        if (foundUser.role === 'admin') {
+          window.history.pushState({}, '', '?page=admin');
+          setView('admin');
+        } else {
+          window.history.pushState({}, '', window.location.pathname);
+          setView('home');
+        }
         addNotification(`Selamat datang kembali, ${foundUser.name}!`);
       } else {
         addNotification(err.message || "Email atau password salah! Silakan daftar jika belum punya akun.");
@@ -205,8 +217,10 @@ export default function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    window.history.pushState({}, '', window.location.pathname);
     setView('home');
     addNotification("Berhasil Logout.");
+    window.scrollTo(0, 0);
   };
 
   const handleRegister = async (data) => {
@@ -214,8 +228,9 @@ export default function App() {
       const resp = await api.register(data);
       localStorage.setItem('token', resp.token);
       setUser(resp.user);
+      window.history.pushState({}, '', window.location.pathname);
       setView('home');
-      addNotification(`Pendaftaran berhasil. Selamat datang ${resp.user.name}!`);
+      addNotification(`Pendaftaran berhasil. Selamat datang, ${resp.user.name}!`);
     } catch (err) {
       // Fallback registrasi lokal
       const newUser = {
@@ -227,15 +242,19 @@ export default function App() {
       };
       setRegisteredUsers(prev => [...prev, newUser]);
       setUser({ id: newUser.id, name: newUser.name, role: newUser.role });
+      window.history.pushState({}, '', window.location.pathname);
       setView('home');
-      addNotification(`Pendaftaran berhasil. Selamat datang ${newUser.name}!`);
+      addNotification(`Pendaftaran berhasil. Selamat datang, ${newUser.name}!`);
     }
+    window.scrollTo(0, 0);
   };
 
   const handleResetPassword = async (email, newPassword) => {
     setRegisteredUsers(prev => prev.map(u => u.email === email ? { ...u, password: newPassword } : u));
     addNotification("✅ Kata sandi berhasil diperbarui! Silakan masuk dengan kata sandi baru.");
+    window.history.pushState({}, '', '?page=login');
     setView('login');
+    window.scrollTo(0, 0);
   };
 
   const addToCart = (product, qty = 1) => {
