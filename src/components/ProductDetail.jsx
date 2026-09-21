@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import ProductCard from './ProductCard';
 import api from '../services/api';
 
@@ -16,7 +16,7 @@ export default function ProductDetail({
   onToggleWishlist,
   localReviews = []
 }) {
-  const p = product || {};
+  const p = product || (allProducts && allProducts[0]) || { name: 'Produk', price: 0 };
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(p.image);
   const [activeTab, setActiveTab] = useState('detail'); // 'detail' | 'spec' | 'info' | 'reviews'
@@ -26,16 +26,16 @@ export default function ProductDetail({
 
   // Logika Pemilihan Varian Produk
   const nameLower = (p.name || '').toLowerCase();
-  const isPhone = nameLower.includes('phone') || nameLower.includes('iphone') || nameLower.includes('samsung');
+  const isPhone = nameLower.includes('iphone') || nameLower.includes('samsung') || nameLower.includes('xiaomi') || nameLower.includes('hp');
   const isFashion = nameLower.includes('kaos') || nameLower.includes('baju') || nameLower.includes('sepatu') || nameLower.includes('sneaker');
 
-  const colorVariants = isPhone 
+  const colorVariants = useMemo(() => isPhone 
     ? ['Natural Titanium', 'Space Black', 'Silver Blue']
     : isFashion 
       ? ['Hitam Onyx', 'Putih Bersih', 'Navy Blue']
-      : ['Hitam Original', 'Silver Abu', 'Emas / Gold'];
+      : ['Hitam Original', 'Silver Abu', 'Emas / Gold'], [isPhone, isFashion]);
 
-  const optionVariants = isPhone
+  const optionVariants = useMemo(() => isPhone
     ? [
         { label: '128 GB', priceDelta: 0 },
         { label: '256 GB', priceDelta: 1500000 },
@@ -50,7 +50,7 @@ export default function ProductDetail({
       : [
           { label: 'Standar Resmi', priceDelta: 0 },
           { label: 'Paket Bundle + Gift', priceDelta: 75000 }
-        ];
+        ], [isPhone, isFashion]);
 
   const [selectedColor, setSelectedColor] = useState(colorVariants[0]);
   const [selectedOption, setSelectedOption] = useState(optionVariants[0]);
@@ -58,7 +58,7 @@ export default function ProductDetail({
   useEffect(() => {
     setSelectedColor(colorVariants[0]);
     setSelectedOption(optionVariants[0]);
-  }, [p.id, p._id]);
+  }, [p.id, p._id, colorVariants, optionVariants]);
 
   const activePrice = (p.price || 0) + (selectedOption?.priceDelta || 0);
   const activeOriginalPrice = p.originalPrice ? (p.originalPrice + (selectedOption?.priceDelta || 0)) : 0;

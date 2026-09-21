@@ -14,10 +14,10 @@ export default function Header({ cartCount, cartItems = [], wishlist = [], goWis
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSearch(search);
+      if (onSearch) onSearch(search);
     }, 250);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, onSearch]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
