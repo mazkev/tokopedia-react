@@ -1,10 +1,38 @@
 import { useState, useEffect } from 'react';
 import { categories } from '../data/products';
 
-export default function Header({ cartCount, cartItems = [], wishlist = [], goWishlist, onToggleWishlist, onProductClick, user, goHome, goCart, goOrders, goLogin, goRegister, goAdmin, onLogout, onSearch }) {
+export default function Header({ 
+  cartCount, 
+  cartItems = [], 
+  wishlist = [], 
+  orders = [],
+  goWishlist, 
+  onToggleWishlist, 
+  onProductClick, 
+  user, 
+  goHome, 
+  goCart, 
+  goOrders, 
+  goLogin, 
+  goRegister, 
+  goAdmin, 
+  onLogout, 
+  onSearch 
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [search, setSearch] = useState('');
-  const [notifCount, setNotifCount] = useState(5);
+  const [readNotifs, setReadNotifs] = useState(false);
+
+  // Reset status baca notifikasi saat user berganti/logout
+  useEffect(() => {
+    setReadNotifs(false);
+  }, [user]);
+
+  // Hitung notifikasi transaksi aktif hanya jika user login
+  const pendingOrders = user && Array.isArray(orders) 
+    ? orders.filter(o => o.status === 'Menunggu Pembayaran' || o.status === 'Diproses' || o.status === 'Dikirim') 
+    : [];
+  const unreadCount = (!user || readNotifs) ? 0 : pendingOrders.length;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -182,44 +210,45 @@ export default function Header({ cartCount, cartItems = [], wishlist = [], goWis
 
             {/* Notification Dropdown */}
             <div className="header-action-wrapper">
-              <button className="header-action-btn" id="notif-btn" title="Notifikasi" onClick={() => setNotifCount(0)}>
+              <button className="header-action-btn" id="notif-btn" title="Notifikasi" onClick={() => setReadNotifs(true)}>
                 🔔
-                {notifCount > 0 && <span className="badge">{notifCount}</span>}
+                {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
               </button>
               <div className="action-dropdown notif-dropdown">
                 <div className="dropdown-header">
                   <h3>Notifikasi</h3>
-                  <a href="#">Pengaturan</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setReadNotifs(true); }}>Tandai Dibaca</a>
                 </div>
                 <div className="dropdown-tabs">
                   <div className="tab active">Transaksi</div>
-                  <div className="tab">Update</div>
+                  <div className="tab">Promo</div>
                 </div>
                 <div className="dropdown-body">
-                  <div className="dropdown-item notif" onClick={() => { setNotifCount(0); goOrders(); }}>
-                    <div className="notif-icon status">📦</div>
-                    <div className="item-info">
-                      <p className="notif-title">Pesanan Baru</p>
-                      <p className="notif-desc">Pesananmu telah berhasil dibuat. Cek statusnya di sini.</p>
-                      <p className="notif-time">Baru saja</p>
+                  {!user ? (
+                    <div style={{ padding: '32px 16px', textAlign: 'center', color: '#717171' }}>
+                      <p style={{ fontSize: '32px', marginBottom: '8px' }}>🔔</p>
+                      <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px', fontSize: '14px' }}>Belum ada notifikasi</p>
+                      <p style={{ fontSize: '12px', color: '#888', marginBottom: '16px' }}>Masuk ke akun Tokopedei untuk melihat status transaksi dan promomu.</p>
+                      <button className="btn-login" style={{ padding: '8px 24px', fontSize: '13px', borderRadius: '8px' }} onClick={goLogin}>Masuk</button>
                     </div>
-                  </div>
-                  <div className="dropdown-item notif">
-                    <div className="notif-icon status">📦</div>
-                    <div className="item-info">
-                      <p className="notif-title">Pesanan Selesai</p>
-                      <p className="notif-desc">Pesanan #INV/2023/123 telah diterima.</p>
-                      <p className="notif-time">2 jam yang lalu</p>
+                  ) : orders.length === 0 ? (
+                    <div style={{ padding: '32px 16px', textAlign: 'center', color: '#717171' }}>
+                      <p style={{ fontSize: '28px', marginBottom: '8px' }}>📦</p>
+                      <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px', fontSize: '13px' }}>Belum ada transaksi</p>
+                      <p style={{ fontSize: '12px', color: '#888' }}>Semua update pesanan dan status pengiriman akunmu akan muncul di sini.</p>
                     </div>
-                  </div>
-                  <div className="dropdown-item notif">
-                    <div className="notif-icon promo">🎉</div>
-                    <div className="item-info">
-                      <p className="notif-title">Promo Menunggumu!</p>
-                      <p className="notif-desc">Diskon hingga 90% untuk Gadget pilihan.</p>
-                      <p className="notif-time">5 jam yang lalu</p>
-                    </div>
-                  </div>
+                  ) : (
+                    orders.slice(0, 3).map((order) => (
+                      <div key={order.id} className="dropdown-item notif" onClick={() => { setReadNotifs(true); goOrders(); }}>
+                        <div className="notif-icon status">📦</div>
+                        <div className="item-info">
+                          <p className="notif-title">Pesanan {order.status}</p>
+                          <p className="notif-desc">{order.invoiceNumber || order.id} • {order.items?.[0]?.name || 'Produk'}</p>
+                          <p className="notif-time">{order.date || 'Baru saja'}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

@@ -376,6 +376,7 @@ export default function App() {
           cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} 
           cartItems={cartItems}
           wishlist={wishlist}
+          orders={orders}
           goWishlist={goWishlist}
           onToggleWishlist={toggleWishlist}
           onProductClick={handleProductClick}
